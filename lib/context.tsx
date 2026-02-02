@@ -29,6 +29,7 @@ import {
   removeBookmark,
   isBookmarked,
   saveBusiness,
+  saveDeal,
   type UserSession,
   type Business,
   type Deal,
@@ -51,6 +52,8 @@ interface AppContextValue {
   reviews: Review[]
   bookmarks: string[]
   toggleBookmark: (businessId: string, business?: Business) => void
+  addBusiness: (business: Business) => void
+  addDeal: (deal: Deal) => void
   refreshData: () => void
 }
 
@@ -147,6 +150,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [refreshData, user, toggleFavorite])
 
+  const addBusiness = useCallback((business: Business) => {
+    saveBusiness(business)
+    refreshData()
+  }, [refreshData])
+
+  const addDeal = useCallback((deal: Deal) => {
+    saveDeal(deal)
+    refreshData()
+  }, [refreshData])
+
   return (
     <AppContext.Provider
       value={{
@@ -160,6 +173,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         reviews,
         bookmarks: user ? favoriteIds : bookmarks,
         toggleBookmark,
+        addBusiness,
+        addDeal,
         refreshData,
       }}
     >

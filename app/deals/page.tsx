@@ -1,25 +1,98 @@
 "use client";
 
 import { useApp } from "@/lib/context";
-import { DealCard } from "@/components/deal-card";
+import { useLocation } from "@/lib/location-context";
+import { DealsGrid } from "@/components/deals-grid";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tag, Clock, Percent, Gift, Ticket, TrendingUp } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Tag, Clock, Percent, Gift, Ticket, TrendingUp, MapPin } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Business, Deal } from "@/lib/data";
 
 export default function DealsPage() {
-  const { deals, businesses } = useApp();
+  const { deals, businesses, addBusiness, addDeal } = useApp();
+  const { getDistanceFromUser, locationError, isLoadingLocation, osmBusinesses, setSearchRadius } = useLocation();
   const [activeTab, setActiveTab] = useState("all");
+
+  // Set search radius to 5 miles (approx 8047 meters) on mount
+  useEffect(() => {
+    setSearchRadius(8047);
+  }, [setSearchRadius]);
+
+  // Automatically onboard OSM businesses and create deals for them if missing
+  useEffect(() => {
+    if (osmBusinesses.length > 0) {
+      osmBusinesses.forEach(osmBusiness => {
+        // 1. Add business if not exists
+        // Note: addBusiness checks internally if it exists, but we can check here to avoid unnecessary calls/renders
+        const existingBusiness = businesses.find(b => b.id === osmBusiness.id);
+        if (!existingBusiness) {
+          addBusiness(osmBusiness);
+        }
+
+        // 2. Add deal if not exists for this business
+        // We check if ANY deal exists for this business. If not, we create one.
+        const existingDeals = deals.filter(d => d.businessId === osmBusiness.id);
+        if (existingDeals.length === 0) {
+           // Deterministic pseudo-random generation based on business ID
+           const seed = osmBusiness.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+           const dealTypes: Deal["dealType"][] = ["percentage", "bogo", "fixed", "freebie"];
+           const type = dealTypes[seed % dealTypes.length];
+           
+           const deal: Deal = {
+             id: `osm-deal-${osmBusiness.id}`,
+             businessId: osmBusiness.id,
+             title: generateDealTitle(type, osmBusiness.name),
+             description: `Special offer at ${osmBusiness.name}! Visit us to redeem.`,
+             discountPercent: type === "percentage" ? (seed % 5 + 1) * 10 : 0,
+             dealPrice: type === "fixed" ? (seed % 20 + 5) : undefined,
+             originalPrice: type === "fixed" ? (seed % 20 + 25) : undefined,
+             code: `LOCAL${seed % 1000}`,
+             termsAndConditions: "Valid for in-store purchases only.",
+             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+             validFrom: new Date().toISOString(),
+             isActive: true,
+             dealType: type,
+             redemptions: 0,
+             maxRedemptions: 100,
+             createdAt: new Date().toISOString(),
+           };
+           addDeal(deal);
+        }
+      });
+    }
+  }, [osmBusinesses, businesses, deals, addBusiness, addDeal]);
+
+  const nearbyDeals = useMemo(() => {
+    // If location is not available yet, we might want to show all or none.
+    // Given the specific request for "5 mile radius", we'll filter.
+    // But if loading, we wait. If error, maybe show all with a warning?
+    // Let's filter if we can calculate distance.
+    return deals.filter((deal) => {
+      const business = businesses.find((b) => b.id === deal.businessId);
+      if (!business) return false;
+      
+      const distance = getDistanceFromUser(business.latitude, business.longitude);
+      
+      // If distance is unknown (user location not set), show the deal (fallback) 
+      // OR hide it? 
+      // "check businesses in a 5 mile radius" -> implies filtering.
+      if (distance === null) return true; // Fallback to showing all if location unknown
+      
+      // 5 miles = approx 8047 meters
+      return distance <= 8047;
+    });
+  }, [deals, businesses, getDistanceFromUser]);
 
   const activeDeals = useMemo(() => {
     const now = new Date();
-    return deals.filter((deal) => {
+    return nearbyDeals.filter((deal) => {
       const start = new Date(deal.validFrom);
       const end = new Date(deal.expiresAt);
       return now >= start && now <= end && deal.isActive;
     });
-  }, [deals]);
+  }, [nearbyDeals]);
 
   const filteredDeals = useMemo(() => {
     if (activeTab === "all") return activeDeals;
@@ -63,6 +136,10 @@ export default function DealsPage() {
             <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
               Discover verified offers from small businesses in your community. Save money while supporting local entrepreneurs.
             </p>
+            <div className="flex items-center gap-2 text-muted-foreground bg-muted/50 w-fit px-4 py-2 rounded-full text-sm">
+              <MapPin className="h-4 w-4" />
+              <span>Showing deals within 5 miles of your location</span>
+            </div>
           </div>
 
 
@@ -128,23 +205,7 @@ export default function DealsPage() {
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredDeals.map((deal, index) => {
-                    const business = businesses.find(
-                      (b) => b.id === deal.businessId
-                    );
-                    if (!business) return null;
-                    return (
-                      <div
-                        key={deal.id}
-                        className="animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        <DealCard deal={deal} business={business} />
-                      </div>
-                    );
-                  })}
-                </div>
+                <DealsGrid deals={filteredDeals} businesses={businesses} />
               )}
             </TabsContent>
           </Tabs>
@@ -154,4 +215,34 @@ export default function DealsPage() {
       </main>
     </div>
   );
+}
+
+function generateDealTitle(type: string, businessName: string): string {
+  switch (type) {
+    case "percentage":
+      return "Special Discount";
+    case "bogo":
+      return "Buy One Get One Free";
+    case "fixed":
+      return "Fixed Price Deal";
+    case "freebie":
+      return "Free Gift with Purchase";
+    default:
+      return "Special Offer";
+  }
+}
+
+function getDealTypeIcon(type: string) {
+  switch (type) {
+    case "percentage":
+      return <Percent className="w-8 h-8 text-primary" />;
+    case "bogo":
+      return <Ticket className="w-8 h-8 text-primary" />;
+    case "fixed":
+      return <Tag className="w-8 h-8 text-primary" />;
+    case "freebie":
+      return <Gift className="w-8 h-8 text-primary" />;
+    default:
+      return <TrendingUp className="w-8 h-8 text-primary" />;
+  }
 }

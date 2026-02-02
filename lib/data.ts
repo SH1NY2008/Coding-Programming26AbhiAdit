@@ -1255,6 +1255,19 @@ export const getDeals = (): Deal[] => {
 }
 
 /**
+ * Saves a deal to storage if it doesn't exist
+ * @param deal - The deal to save
+ */
+export const saveDeal = (deal: Deal): void => {
+  if (typeof window === 'undefined') return
+  const deals = getDeals()
+  if (!deals.find(d => d.id === deal.id)) {
+    deals.push(deal)
+    localStorage.setItem(STORAGE_KEYS.DEALS, JSON.stringify(deals))
+  }
+}
+
+/**
  * Retrieves active deals (not expired, not fully redeemed)
  * @returns Array of active deals
  */
