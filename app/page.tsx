@@ -88,38 +88,40 @@ export default function HomePage() {
     }
   }, [isLoading, session])
 
-  /**
-   * Handles search form submission
-   */
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      window.location.href = `/browse?search=${encodeURIComponent(searchQuery.trim())}`
-    }
-  }
-
   return (
     <>
       {/* Onboarding Tutorial */}
       <Onboarding open={showOnboarding} onOpenChange={setShowOnboarding} />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-background pt-24 pb-20 sm:pt-32 sm:pb-24 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-8 text-foreground text-balance">
-              Discover & Support <br className="hidden sm:block" />
-              <span className="text-primary relative inline-block">
-                Local Businesses
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-accent/30 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
-                </svg>
-              </span>
+      <section className="bg-background px-4 py-4 min-h-[90vh] flex flex-col">
+        <div className="flex-1 rounded-[2.5rem] bg-foreground text-background flex flex-col items-center justify-center text-center relative overflow-hidden py-20 px-4 shadow-2xl">
+          {/* Background decoration/texture could go here */}
+          
+          <div className="max-w-5xl mx-auto flex flex-col items-center z-10">
+            <p className="text-lg sm:text-xl font-medium mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100 uppercase tracking-widest text-background/80">
+              The local directory without the hassle
+            </p>
+
+            <h1 className="flex flex-col items-center justify-center text-5xl sm:text-7xl lg:text-9xl font-black tracking-tighter uppercase mb-10 leading-[0.85] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 w-full">
+              <span className="mb-2 text-background">To Discover</span>
+              <span className="mb-2 text-background">Local</span>
+              <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2">
+                <span className="bg-background text-foreground px-4 sm:px-8 py-1 sm:py-4 -rotate-2 transform inline-block shadow-xl">
+                  With Complete
+                </span>
+                <span className="bg-background text-foreground px-4 sm:px-8 py-1 sm:py-4 rotate-2 transform inline-block shadow-xl">
+                  Confidence
+                </span>
+              </div>
             </h1>
 
-            {/* Subheadline */}
-            {/* Search Bar */}
+            <p className="max-w-2xl text-lg sm:text-xl text-background/70 font-medium mb-12 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 text-balance">
+              Byte-Sized Boost does more than just help you find THE right business.
+              We also support you in launching your business independently: advice, tools, and ongoing support.
+            </p>
+
+            {/* Action Buttons removed as per request */}
           </div>
         </div>
       </section>
