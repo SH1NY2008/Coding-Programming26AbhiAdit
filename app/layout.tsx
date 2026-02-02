@@ -3,10 +3,12 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AppProvider } from '@/lib/context'
+import { AuthProvider } from '@/lib/auth-context'
 import { LocationProvider } from '@/lib/location-context'
 import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
+import { Toaster } from "@/components/ui/sonner"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -54,14 +56,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <AppProvider>
-          <LocationProvider>
-            <Header />
-            <main id="main-content">{children}</main>
-            <SiteFooter />
-            <HelpChat />
-          </LocationProvider>
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            <LocationProvider>
+              <Header />
+              <main id="main-content">{children}</main>
+              <SiteFooter />
+              <HelpChat />
+            </LocationProvider>
+          </AppProvider>
+        </AuthProvider>
+        <Toaster />
         <Analytics />
       </body>
     </html>

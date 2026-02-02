@@ -34,6 +34,8 @@ import {
   type Deal,
   type Review,
 } from "./data"
+import { useAuth } from "@/lib/auth-context"
+import { useFavorites } from "@/hooks/use-favorites"
 
 /**
  * Application context value interface
@@ -61,6 +63,8 @@ const AppContext = createContext<AppContextValue | null>(null)
  * @param children - Child components to wrap
  */
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
+  const { favoriteIds, toggleFavorite } = useFavorites()
   const [session, setSession] = useState<UserSession | null>(null)
   const [highContrastMode, setHighContrastMode] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -122,6 +126,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
    * Toggles bookmark status for a business
    */
   const toggleBookmark = useCallback((businessId: string, business?: Business) => {
+    if (user) {
+      toggleFavorite(businessId)
+      return
+    }
+
     const folders = getBookmarkFolders()
     const defaultFolder = folders.find(f => f.id === 'default') || folders[0]
     
@@ -136,7 +145,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       refreshData()
     }
-  }, [refreshData])
+  }, [refreshData, user, toggleFavorite])
 
   return (
     <AppContext.Provider
@@ -149,7 +158,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         businesses,
         deals,
         reviews,
-        bookmarks,
+        bookmarks: user ? favoriteIds : bookmarks,
         toggleBookmark,
         refreshData,
       }}
