@@ -9,10 +9,10 @@
  * @module BusinessDetailPage
  */
 
-import { useState, useEffect, use, useMemo } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound, useSearchParams } from "next/navigation"
 import {
   MapPin,
   Phone,
@@ -84,19 +84,18 @@ const dayOrder = [
   "sunday",
 ]
 
-export default function BusinessDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = use(params)
+function BusinessDetailContent() {
+  const searchParams = useSearchParams()
+  const id = searchParams.get("id")
   const { bookmarks, toggleBookmark } = useApp()
+  
   const [business, setBusiness] = useState<Business | null>(() => {
+    if (!id) return null
     if (id.startsWith("geoapify-")) return null
     const result = getBusinessById(id)
     return result || null
   })
-  const [loading, setLoading] = useState(id.startsWith("geoapify-"))
+  const [loading, setLoading] = useState(!!(id && id.startsWith("geoapify-")))
   const [reviews, setReviews] = useState<Review[]>([])
   const [deals, setDeals] = useState<Deal[]>([])
   const [helpfulReviews, setHelpfulReviews] = useState<Set<string>>(new Set())
@@ -105,10 +104,9 @@ export default function BusinessDetailPage({
 
   const bookmarked = business ? bookmarks.includes(business.id) : false
 
-
   // Calculate display rating/reviews to prefer local data over mock Geoapify data
   const displayedRating = useMemo(() => {
-    if (id.startsWith("geoapify-") && reviews.length > 0) {
+    if (id && id.startsWith("geoapify-") && reviews.length > 0) {
       const total = reviews.reduce((sum, r) => sum + r.rating, 0)
       return Math.round((total / reviews.length) * 10) / 10
     }
@@ -116,7 +114,7 @@ export default function BusinessDetailPage({
   }, [business, reviews, id])
 
   const displayedReviewCount = useMemo(() => {
-    if (id.startsWith("geoapify-") && reviews.length > 0) {
+    if (id && id.startsWith("geoapify-") && reviews.length > 0) {
       return reviews.length
     }
     return business?.totalReviews || 0
@@ -124,7 +122,7 @@ export default function BusinessDetailPage({
 
   useEffect(() => {
     async function loadBusiness() {
-      if (id.startsWith("geoapify-")) {
+      if (id && id.startsWith("geoapify-")) {
         try {
           const placeId = id.replace("geoapify-", "")
           const data = await fetchPlaceDetails(placeId)
@@ -139,14 +137,16 @@ export default function BusinessDetailPage({
       }
     }
 
-    if (id.startsWith("geoapify-")) {
+    if (id && id.startsWith("geoapify-")) {
       loadBusiness()
+    } else if (!id) {
+      // No ID provided
     }
   }, [id])
 
   // Load data
   useEffect(() => {
-    if (business) {
+    if (business && id) {
       setReviews(getReviewsByBusiness(id))
       setDeals(getDealsByBusiness(id))
     }
@@ -163,8 +163,12 @@ export default function BusinessDetailPage({
     )
   }
 
-  if (!business) {
-    notFound()
+  if (!business || !id) {
+    // Wait until we are sure we don't have it?
+    // If id is missing, it's 404
+    // If id is present but business is null and not loading, it's 404
+    if (!loading) return notFound()
+    return null
   }
 
   const isOpen = isBusinessOpen(business)
@@ -539,63 +543,49 @@ export default function BusinessDetailPage({
             {/* Hours Card */}
             <div className="rounded-2xl border border-border/50 p-6 shadow-sm bg-background">
               <h3 className="font-bold text-xl mb-6">Business Hours</h3>
-              
-              {/* Today's Hours */}
-              <div className="flex items-center justify-between mb-6 p-4 bg-muted/30 rounded-xl">
-                <span className="font-medium">Today</span>
-                <span
-                  className={cn(
-                    "font-bold",
-                    isOpen ? "text-emerald-600" : "text-rose-600"
-                  )}
-                >
-                  {formatHours(todayHours)}
-                </span>
+              <div className="space-y-4">
+                {dayOrder.map((day) => {
+                  const isToday = day === today
+                  const hours = business.hours[day]
+                  
+                  return (
+                    <div 
+                      key={day}
+                      className={cn(
+                        "flex items-center justify-between py-2 border-b border-border/50 last:border-0",
+                        isToday && "font-bold text-primary"
+                      )}
+                    >
+                      <span className="capitalize">{day}</span>
+                      <span className={cn(
+                        hours ? "text-muted-foreground" : "text-destructive/80",
+                        isToday && "text-primary"
+                      )}>
+                        {formatHours(hours)}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
-
-              {/* All Hours */}
-              <Collapsible open={showAllHours} onOpenChange={setShowAllHours}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="outline" size="sm" className="w-full h-10 border-dashed">
-                    {showAllHours ? "Hide" : "Show"} Full Schedule
-                    {showAllHours ? (
-                      <ChevronUp className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="space-y-3 mt-6">
-                    {dayOrder.map((day) => {
-                      const hours = business.hours[day]
-                      const isToday = day === today
-                      return (
-                        <div
-                          key={day}
-                          className={cn(
-                            "flex items-center justify-between text-sm py-1 border-b border-border/50 last:border-0 pb-2",
-                            isToday && "font-bold text-primary"
-                          )}
-                        >
-                          <span className="capitalize">{day}</span>
-                          <span
-                            className={cn(
-                              hours ? "text-foreground" : "text-muted-foreground"
-                            )}
-                          >
-                            {formatHours(hours)}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
             </div>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function BusinessDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-muted-foreground">Loading business details...</p>
+        </div>
+      </div>
+    }>
+      <BusinessDetailContent />
+    </Suspense>
   )
 }

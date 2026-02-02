@@ -57,7 +57,7 @@ export default function BookmarksPage() {
               items={bookmarkedBusinesses.map((business) => ({
                 title: business.name,
                 description: business.description,
-                link: `/business/${business.id}`,
+                link: `/business?id=${business.id}`,
                 image: business.imageUrl || "/placeholder.svg",
                 category: business.subcategory || business.category,
                 rating: business.averageRating,

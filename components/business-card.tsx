@@ -108,7 +108,7 @@ export function BusinessCard({
       )}
     >
       <Link
-        href={`/business/${business.id}`}
+        href={`/business?id=${business.id}`}
         className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         aria-label={`View ${business.name} details`}
       >

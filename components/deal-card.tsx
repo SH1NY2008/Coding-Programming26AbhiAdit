@@ -142,7 +142,7 @@ export function DealCard({ deal, business: providedBusiness, showBusiness = true
             {/* Business Name */}
             {business && showBusiness && (
               <Link
-                href={`/business/${business.id}`}
+                href={`/business?id=${business.id}`}
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-1"
               >
                 <Store className="h-4 w-4" />
