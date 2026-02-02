@@ -9,7 +9,6 @@ import {
   IconChevronsRight,
   IconDotsVertical,
   IconLayoutColumns,
-  IconStar,
   IconStarFilled,
 } from "@tabler/icons-react"
 import {
