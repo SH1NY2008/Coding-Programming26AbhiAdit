@@ -1,7 +1,7 @@
 "use client";
 
 import { useApp } from "@/lib/context";
-import { BusinessCard } from "@/components/business-card";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Search, ArrowRight, Heart } from "lucide-react";
 import Link from "next/link";
@@ -53,17 +53,20 @@ export default function BookmarksPage() {
                 {bookmarkedBusinesses.length !== 1 ? "es" : ""}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bookmarkedBusinesses.map((business, index) => (
-                <div
-                  key={business.id}
-                  className="animate-in fade-in slide-in-from-bottom-8 fill-mode-backwards"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <BusinessCard business={business} />
-                </div>
-              ))}
-            </div>
+            <HoverEffect
+              items={bookmarkedBusinesses.map((business) => ({
+                title: business.name,
+                description: business.description,
+                link: `/business/${business.id}`,
+                image: business.imageUrl || "/placeholder.svg",
+                category: business.subcategory || business.category,
+                rating: business.averageRating,
+                reviews: business.totalReviews,
+                location: `${business.city}, ${business.state}`,
+                priceLevel: business.priceLevel,
+                tags: business.tags,
+              }))}
+            />
           </div>
         )}
       </main>

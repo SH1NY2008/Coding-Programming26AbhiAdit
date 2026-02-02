@@ -115,12 +115,6 @@ export default function HomePage() {
                 </span>
               </div>
             </h1>
-
-            <p className="max-w-2xl text-lg sm:text-xl text-background/70 font-medium mb-12 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300 text-balance">
-              Byte-Sized Boost does more than just help you find THE right business.
-              We also support you in launching your business independently: advice, tools, and ongoing support.
-            </p>
-
             {/* Action Buttons removed as per request */}
           </div>
         </div>

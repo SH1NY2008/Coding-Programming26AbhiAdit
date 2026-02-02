@@ -218,6 +218,14 @@ export function LocationProvider({ children }: LocationProviderProps) {
     }
   }, [geo.isLoading, geo.error, manualLocation, fetchIpLocation])
 
+  /**
+   * Refreshes user location using browser geolocation
+   */
+  const refreshLocation = useCallback(() => {
+    setManualLocation(null)
+    geo.requestLocation()
+  }, [geo])
+
   return (
     <LocationContext.Provider
       value={{
@@ -234,7 +242,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
         searchRadius,
         setSearchRadius,
         
-        refreshLocation: geo.requestLocation,
+        refreshLocation,
         refreshBusinesses,
         
         getDistanceFromUser,

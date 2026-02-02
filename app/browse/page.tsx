@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Loader2,
   Navigation,
+  Map,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -43,18 +44,29 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { BusinessCard } from "@/components/business-card"
+import { HoverEffect } from "@/components/ui/card-hover-effect"
 import {
   filterBusinesses,
   CATEGORIES,
   type Business,
 } from "@/lib/data"
 import { useLocation } from "@/lib/location-context"
+import { forwardGeocode } from "@/lib/geoapify"
 import { validateSearchQuery } from "@/lib/validation"
 import { cn } from "@/lib/utils"
 import { Slider } from "@/components/ui/slider"
@@ -113,6 +125,7 @@ function BrowseContent() {
     refreshLocation,
     refreshBusinesses,
     getDistanceFromUser,
+    useManualLocation,
   } = useLocation()
 
   // State for filters and results
@@ -126,6 +139,47 @@ function BrowseContent() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [dataSource, setDataSource] = useState<"osm" | "mock">("osm")
   const [businesses, setBusinesses] = useState<Business[]>([])
+
+  // Location Picker State
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false)
+  const [locationQuery, setLocationQuery] = useState("")
+  const [isGeocoding, setIsGeocoding] = useState(false)
+  const [geocodeError, setGeocodeError] = useState<string | null>(null)
+
+  /**
+   * Handles manual location submission
+   */
+  const handleManualLocationSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!locationQuery.trim()) return
+
+    setIsGeocoding(true)
+    setGeocodeError(null)
+
+    try {
+      const result = await forwardGeocode(locationQuery)
+      if (result) {
+        useManualLocation(result.lat, result.lon)
+        setLocationDialogOpen(false)
+        setLocationQuery("")
+      } else {
+        setGeocodeError("Location not found. Please try a different address or city.")
+      }
+    } catch (error) {
+      setGeocodeError("An error occurred. Please try again.")
+    } finally {
+      setIsGeocoding(false)
+    }
+  }
+
+  /**
+   * Handles using current location
+   */
+  const handleUseCurrentLocation = () => {
+    refreshLocation()
+    setLocationDialogOpen(false)
+  }
+
 
   /**
    * Filters and sorts business data from either OSM or mock source
@@ -477,16 +531,58 @@ function BrowseContent() {
             <span>Discover local small businesses in your community</span>
           )}
           {!isLoadingLocation && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={refreshLocation}
-              className="h-8 px-3 text-sm font-medium"
-              aria-label="Refresh location"
-            >
-              <Navigation className="h-3 w-3 mr-1" />
-              Update Location
-            </Button>
+            <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-3 text-sm font-medium"
+                  aria-label="Update location"
+                >
+                  <Navigation className="h-3 w-3 mr-1" />
+                  Update Location
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Update Location</DialogTitle>
+                  <DialogDescription>
+                    Enter a city, zip code, or address to see businesses in that area.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleManualLocationSubmit} className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="location"
+                        placeholder="e.g. San Francisco, CA"
+                        value={locationQuery}
+                        onChange={(e) => setLocationQuery(e.target.value)}
+                        disabled={isGeocoding}
+                      />
+                      <Button type="submit" disabled={isGeocoding || !locationQuery.trim()}>
+                        {isGeocoding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update"}
+                      </Button>
+                    </div>
+                    {geocodeError && (
+                      <p className="text-sm text-destructive">{geocodeError}</p>
+                    )}
+                  </div>
+                </form>
+                <DialogFooter className="sm:justify-start">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleUseCurrentLocation}
+                    className="w-full sm:w-auto"
+                  >
+                    <Map className="mr-2 h-4 w-4" />
+                    Use Current Location
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </div>
@@ -679,23 +775,37 @@ function BrowseContent() {
 
           {/* Business Grid/List */}
           {filteredBusinesses.length > 0 ? (
-            <div
-              className={cn(
-                "animate-in fade-in slide-in-from-bottom-8 duration-700",
-                viewMode === "grid"
-                  ? "grid sm:grid-cols-2 xl:grid-cols-3 gap-8"
-                  : "flex flex-col gap-6"
-              )}
-            >
-              {filteredBusinesses.map((business, index) => (
-                <div key={business.id} className="h-full" style={{ animationDelay: `${index * 50}ms` }}>
-                  <BusinessCard
-                    business={business}
-                    className={cn("h-full", viewMode === "list" ? "flex-row" : undefined)}
-                  />
-                </div>
-              ))}
-            </div>
+            viewMode === "grid" ? (
+              <HoverEffect
+                items={filteredBusinesses.map((business) => ({
+                  title: business.name,
+                  description: business.description,
+                  link: `/business/${business.id}`,
+                  image: business.imageUrl || "/placeholder.svg",
+                  category: business.subcategory || business.category,
+                  rating: business.averageRating,
+                  reviews: business.totalReviews,
+                  location: `${business.city}, ${business.state}`,
+                  priceLevel: business.priceLevel,
+                  tags: business.tags,
+                }))}
+              />
+            ) : (
+              <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {filteredBusinesses.map((business, index) => (
+                  <div
+                    key={business.id}
+                    className="h-full"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <BusinessCard
+                      business={business}
+                      className="h-full flex-row"
+                    />
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="text-center py-16">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
