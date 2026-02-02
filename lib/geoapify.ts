@@ -358,8 +358,8 @@ export async function fetchNearbyBusinesses(
       "commercial.supermarket",
       "commercial.shopping_mall",
       "commercial.clothing",
-      "commercial.electronics",
-      "commercial.gift",
+      // "commercial.electronics", // Not supported by Geoapify V2
+      // "commercial.gift", // Not supported by Geoapify V2
       "commercial.books",
       "healthcare",
       "service.beauty",

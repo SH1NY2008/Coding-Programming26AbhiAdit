@@ -2,7 +2,6 @@
 
 import { useApp } from "@/lib/context";
 import { BusinessCard } from "@/components/business-card";
-import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Bookmark, Search, ArrowRight, Heart } from "lucide-react";
 import Link from "next/link";
@@ -14,16 +13,12 @@ export default function BookmarksPage() {
     bookmarks.includes(b.id)
   );
 
-  const breadcrumbItems = [{ label: "Bookmarks" }];
-
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/10">
-      <Breadcrumbs customSegments={breadcrumbItems} />
-
       <main className="container mx-auto px-4 py-12 sm:py-24 space-y-12">
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance max-w-4xl">
-            Saved <span className="text-muted-foreground">Businesses</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground text-balance">
+            Saved <span className="text-primary">Businesses</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
             Your personal collection of favorite local spots. Keep track of the businesses you love and want to visit again.

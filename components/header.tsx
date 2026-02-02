@@ -20,8 +20,6 @@ import {
   Bookmark,
   Tag,
   BarChart3,
-  HelpCircle,
-  Contrast,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -31,13 +29,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { useApp } from "@/lib/context"
 import { cn } from "@/lib/utils"
 
 /**
@@ -49,7 +40,6 @@ const navLinks = [
   { href: "/bookmarks", label: "My Favorites", icon: Bookmark },
   { href: "/deals", label: "Deals", icon: Tag },
   { href: "/reports", label: "Reports", icon: BarChart3 },
-  { href: "/help", label: "Help", icon: HelpCircle },
 ]
 
 /**
@@ -59,7 +49,6 @@ const navLinks = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const { highContrastMode, toggleHighContrast } = useApp()
 
   /**
    * Checks if a navigation link is currently active
@@ -118,26 +107,6 @@ export function Header() {
 
         {/* Right Section: Accessibility & Mobile Menu */}
         <div className="flex items-center gap-2">
-          {/* High Contrast Toggle */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={highContrastMode ? "default" : "ghost"}
-                  size="icon"
-                  onClick={toggleHighContrast}
-                  aria-label={`High contrast mode is ${highContrastMode ? "on" : "off"}. Click to toggle.`}
-                  aria-pressed={highContrastMode}
-                >
-                  <Contrast className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {highContrastMode ? "Disable" : "Enable"} high contrast
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>

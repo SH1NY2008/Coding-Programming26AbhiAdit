@@ -1,15 +1,9 @@
 "use client"
 
 import React, { useMemo } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { DataTable } from "@/components/data-table"
 import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
 import { useApp } from "@/lib/context"
 
 export default function Page() {
@@ -57,29 +51,19 @@ export default function Page() {
   }, [businesses, reviews])
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards {...metrics} />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive data={chartData} />
-              </div>
-              <DataTable data={businesses} />
-            </div>
-          </div>
+    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="@container/main flex flex-col gap-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
+          <p className="text-muted-foreground mt-2">
+            Analyze business performance, reviews, and engagement metrics.
+          </p>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+        
+        <SectionCards {...metrics} />
+        <ChartAreaInteractive data={chartData} />
+        <DataTable data={businesses} />
+      </div>
+    </div>
   )
 }

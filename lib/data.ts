@@ -919,6 +919,20 @@ export const getBusinessById = (id: string): Business | undefined => {
 }
 
 /**
+ * Saves a business to storage if it doesn't exist
+ * Used when bookmarking businesses from external sources (e.g. OSM)
+ * @param business - The business to save
+ */
+export const saveBusiness = (business: Business): void => {
+  if (typeof window === 'undefined') return
+  const businesses = getBusinesses()
+  if (!businesses.find(b => b.id === business.id)) {
+    businesses.push(business)
+    localStorage.setItem(STORAGE_KEYS.BUSINESSES, JSON.stringify(businesses))
+  }
+}
+
+/**
  * Filters businesses based on search criteria
  * @param filters - Object containing filter parameters
  * @returns Filtered array of businesses

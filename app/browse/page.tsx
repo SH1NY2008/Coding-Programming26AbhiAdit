@@ -48,7 +48,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { BusinessCard } from "@/components/business-card"
 import {
   filterBusinesses,
@@ -454,9 +453,6 @@ function BrowseContent() {
 
   return (
     <div className="container mx-auto px-6 lg:px-12 py-12 lg:py-20">
-      {/* Breadcrumbs */}
-      <Breadcrumbs className="mb-8" />
-
       {/* Page Header with Location */}
       <div className="mb-12 space-y-4">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground text-balance">

@@ -2,7 +2,6 @@
 
 import { useApp } from "@/lib/context";
 import { DealCard } from "@/components/deal-card";
-import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,8 +36,6 @@ export default function DealsPage() {
     };
   }, [activeDeals]);
 
-  const breadcrumbItems = useMemo(() => [{ label: "Home", href: "/" }, { label: "Deals" }], []);
-
   const getDealTypeIcon = (type: string) => {
     switch (type) {
       case "percentage":
@@ -56,14 +53,12 @@ export default function DealsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/10">
-      <Breadcrumbs customSegments={breadcrumbItems} />
-
       <main className="container mx-auto px-4 py-12 sm:py-24 space-y-24">
         {/* Hero Section */}
         <section className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance max-w-4xl">
-              Exclusive <span className="text-muted-foreground">Local Deals</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground text-balance">
+              Exclusive <span className="text-primary">Local Deals</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl leading-relaxed">
               Discover verified offers from small businesses in your community. Save money while supporting local entrepreneurs.

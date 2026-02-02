@@ -28,6 +28,7 @@ import {
   addBookmark,
   removeBookmark,
   isBookmarked,
+  saveBusiness,
   type UserSession,
   type Business,
   type Deal,
@@ -47,7 +48,7 @@ interface AppContextValue {
   deals: Deal[]
   reviews: Review[]
   bookmarks: string[]
-  toggleBookmark: (businessId: string) => void
+  toggleBookmark: (businessId: string, business?: Business) => void
   refreshData: () => void
 }
 
@@ -120,7 +121,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   /**
    * Toggles bookmark status for a business
    */
-  const toggleBookmark = useCallback((businessId: string) => {
+  const toggleBookmark = useCallback((businessId: string, business?: Business) => {
     const folders = getBookmarkFolders()
     const defaultFolder = folders.find(f => f.id === 'default') || folders[0]
     
@@ -128,6 +129,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (isBookmarked(businessId)) {
         removeBookmark(defaultFolder.id, businessId)
       } else {
+        if (business) {
+          saveBusiness(business)
+        }
         addBookmark(defaultFolder.id, businessId)
       }
       refreshData()

@@ -39,19 +39,15 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { StarRating } from "@/components/star-rating"
 import { ReviewForm } from "@/components/review-form"
 import { DealCard } from "@/components/deal-card"
+import { useApp } from "@/lib/context"
 import {
   getBusinessById,
   getReviewsByBusiness,
   getDealsByBusiness,
   isBusinessOpen,
-  isBookmarked,
-  addBookmark,
-  removeBookmark,
-  getBookmarkFolders,
   markReviewHelpful,
   CATEGORIES,
   type Business,
@@ -94,6 +90,7 @@ export default function BusinessDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const { bookmarks, toggleBookmark } = useApp()
   const [business, setBusiness] = useState<Business | null>(() => {
     if (id.startsWith("geoapify-")) return null
     const result = getBusinessById(id)
@@ -102,10 +99,12 @@ export default function BusinessDetailPage({
   const [loading, setLoading] = useState(id.startsWith("geoapify-"))
   const [reviews, setReviews] = useState<Review[]>([])
   const [deals, setDeals] = useState<Deal[]>([])
-  const [bookmarked, setBookmarked] = useState(false)
   const [helpfulReviews, setHelpfulReviews] = useState<Set<string>>(new Set())
   const [showAllHours, setShowAllHours] = useState(false)
   const [reviewsLimit, setReviewsLimit] = useState(5)
+
+  const bookmarked = business ? bookmarks.includes(business.id) : false
+
 
   // Calculate display rating/reviews to prefer local data over mock Geoapify data
   const displayedRating = useMemo(() => {
@@ -150,7 +149,6 @@ export default function BusinessDetailPage({
     if (business) {
       setReviews(getReviewsByBusiness(id))
       setDeals(getDealsByBusiness(id))
-      setBookmarked(isBookmarked(id))
     }
   }, [id, business])
 
@@ -177,16 +175,9 @@ export default function BusinessDetailPage({
    * Handles bookmark toggle
    */
   const handleBookmarkToggle = () => {
-    if (bookmarked) {
-      const folders = getBookmarkFolders()
-      const folder = folders.find((f) => f.businessIds.includes(business.id))
-      if (folder) {
-        removeBookmark(folder.id, business.id)
-      }
-    } else {
-      addBookmark("default", business.id)
+    if (business) {
+      toggleBookmark(business.id, business)
     }
-    setBookmarked(!bookmarked)
   }
 
   /**
@@ -258,17 +249,6 @@ export default function BusinessDetailPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-8">
-        <Breadcrumbs
-          customSegments={[
-            { label: "Browse Businesses", href: "/browse" },
-            { label: categoryName, href: `/browse?category=${business.category}` },
-            { label: business.name },
-          ]}
-        />
-      </div>
-
       {/* Hero Image */}
       <div className="relative h-[45vh] min-h-[400px] mt-8 w-full group overflow-hidden">
         <Image

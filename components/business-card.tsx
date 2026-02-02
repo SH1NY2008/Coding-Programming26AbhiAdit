@@ -11,7 +11,6 @@ import React from "react"
  * @module BusinessCard
  */
 
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -32,13 +31,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { StarRating } from "@/components/star-rating"
+import { useApp } from "@/lib/context"
 import {
   type Business,
   isBusinessOpen,
-  isBookmarked,
-  addBookmark,
-  removeBookmark,
-  getBookmarkFolders,
   getDealsByBusiness,
 } from "@/lib/data"
 import { cn } from "@/lib/utils"
@@ -62,7 +58,8 @@ export function BusinessCard({
   onBookmarkChange,
   className,
 }: BusinessCardProps) {
-  const [bookmarked, setBookmarked] = useState(() => isBookmarked(business.id))
+  const { bookmarks, toggleBookmark } = useApp()
+  const bookmarked = bookmarks.includes(business.id)
   const isOpen = isBusinessOpen(business)
   const deals = getDealsByBusiness(business.id)
   const hasDeals = deals.length > 0
@@ -75,19 +72,7 @@ export function BusinessCard({
     e.preventDefault()
     e.stopPropagation()
 
-    if (bookmarked) {
-      const folders = getBookmarkFolders()
-      const folderWithBusiness = folders.find((f) =>
-        f.businessIds.includes(business.id)
-      )
-      if (folderWithBusiness) {
-        removeBookmark(folderWithBusiness.id, business.id)
-      }
-    } else {
-      addBookmark("default", business.id)
-    }
-
-    setBookmarked(!bookmarked)
+    toggleBookmark(business.id, business)
     onBookmarkChange?.()
   }
 

@@ -119,48 +119,7 @@ export default function HomePage() {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto text-pretty font-light leading-relaxed">
-              Find amazing small businesses in your community. Read reviews, save favorites,
-              discover deals, and help local entrepreneurs thrive.
-            </p>
-
             {/* Search Bar */}
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-16"
-            >
-              <div className="relative flex-1 group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                <Input
-                  type="search"
-                  placeholder="Search businesses, categories, or locations..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 h-14 text-lg bg-background border-2 border-muted focus-visible:border-primary rounded-xl shadow-sm transition-all hover:border-primary/50"
-                  aria-label="Search businesses"
-                />
-              </div>
-              <Button type="submit" size="lg" className="h-14 px-8 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
-                Search
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </form>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto border-t border-border/50 pt-12">
-              <div className="text-center animate-in fade-in zoom-in duration-500 delay-100">
-                <p className="text-4xl font-bold text-foreground mb-1">{stats.businesses}+</p>
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Local Businesses</p>
-              </div>
-              <div className="text-center animate-in fade-in zoom-in duration-500 delay-200">
-                <p className="text-4xl font-bold text-foreground mb-1">{stats.reviews}+</p>
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Reviews</p>
-              </div>
-              <div className="text-center animate-in fade-in zoom-in duration-500 delay-300">
-                <p className="text-4xl font-bold text-foreground mb-1">{stats.deals}</p>
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Active Deals</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
