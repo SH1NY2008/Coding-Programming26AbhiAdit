@@ -60,7 +60,11 @@ interface StatsData {
   deals: number
 }
 
+import { SplashScreen } from "@/components/splash-screen"
+import { AnimatePresence } from "motion/react"
+
 export default function HomePage() {
+  const [showSplash, setShowSplash] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [stats, setStats] = useState<StatsData>({ businesses: 0, reviews: 0, deals: 0 })
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -90,6 +94,10 @@ export default function HomePage() {
 
   return (
     <>
+      <AnimatePresence mode="wait">
+        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      </AnimatePresence>
+
       {/* Onboarding Tutorial */}
       <Onboarding open={showOnboarding} onOpenChange={setShowOnboarding} />
 

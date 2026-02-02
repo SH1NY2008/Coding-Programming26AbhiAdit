@@ -65,47 +65,7 @@ export default function DealsPage() {
             </p>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
-            <div className="group p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors duration-300">
-              <div className="flex items-center gap-2 text-primary mb-2">
-                <Tag className="h-5 w-5" />
-                <span className="text-sm font-medium">Active Deals</span>
-              </div>
-              <p className="text-3xl font-bold">{activeDeals.length}</p>
-            </div>
-            <div className="group p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors duration-300">
-              <div className="flex items-center gap-2 text-primary mb-2">
-                <Percent className="h-5 w-5" />
-                <span className="text-sm font-medium">% Off</span>
-              </div>
-              <p className="text-3xl font-bold">{dealCounts.percentage}</p>
-            </div>
-            <div className="group p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors duration-300">
-              <div className="flex items-center gap-2 text-primary mb-2">
-                <Gift className="h-5 w-5" />
-                <span className="text-sm font-medium">BOGO</span>
-              </div>
-              <p className="text-3xl font-bold">{dealCounts.bogo}</p>
-            </div>
-            <div className="group p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors duration-300">
-              <div className="flex items-center gap-2 text-primary mb-2">
-                <Clock className="h-5 w-5" />
-                <span className="text-sm font-medium">Ending Soon</span>
-              </div>
-              <p className="text-3xl font-bold">
-                {
-                  activeDeals.filter((d) => {
-                    const daysLeft = Math.ceil(
-                      (new Date(d.expiresAt).getTime() - Date.now()) /
-                        (1000 * 60 * 60 * 24)
-                    );
-                    return daysLeft <= 3;
-                  }).length
-                }
-              </p>
-            </div>
-          </div>
+
         </section>
 
         {/* Deals Feed */}
@@ -190,38 +150,7 @@ export default function DealsPage() {
           </Tabs>
         </section>
 
-        {/* How it Works */}
-        <section className="py-12 border-t border-border/50 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="space-y-4">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <Tag className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">1. Find a Deal</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Browse through our curated list of exclusive offers from verified local businesses. Filter by category to find exactly what you need.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <Ticket className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">2. Get Your Code</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Click "Get Code" to reveal your unique redemption code. We'll verify the deal is still active and available for you.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <Gift className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-semibold">3. Redeem & Save</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Show the code at the business location or use it during checkout. Enjoy your savings while supporting the local community.
-              </p>
-            </div>
-          </div>
-        </section>
+
       </main>
     </div>
   );
