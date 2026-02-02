@@ -9,6 +9,7 @@ import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
 import { Toaster } from "@/components/ui/sonner"
+import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
   keywords: ['local business', 'small business', 'reviews', 'deals', 'community', 'support local'],
   authors: [{ name: 'FBLA Chapter' }],
   generator: 'Next.js',
+  manifest: '/manifest.json',
   icons: {
     icon: [
       {
