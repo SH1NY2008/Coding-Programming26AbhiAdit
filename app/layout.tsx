@@ -10,6 +10,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
 import { Toaster } from "@/components/ui/sonner"
 import { ServiceWorkerRegister } from "@/components/service-worker-register"
+import { SmoothScroll } from "@/components/smooth-scroll"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -57,17 +58,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
-        <AuthProvider>
-          <AppProvider>
-            <LocationProvider>
-              <Header />
-              <main id="main-content">{children}</main>
-              <SiteFooter />
-              <HelpChat />
-            </LocationProvider>
-          </AppProvider>
-        </AuthProvider>
+      <body className="font-sans antialiased bg-black text-white">
+        <SmoothScroll>
+          <AuthProvider>
+            <AppProvider>
+              <LocationProvider>
+                <Header />
+                <main id="main-content" className="min-h-screen pt-20">{children}</main>
+                <SiteFooter />
+                <HelpChat />
+              </LocationProvider>
+            </AppProvider>
+          </AuthProvider>
+        </SmoothScroll>
         <Toaster />
         <Analytics />
       </body>
