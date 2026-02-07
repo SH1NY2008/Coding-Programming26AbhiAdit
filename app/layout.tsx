@@ -9,10 +9,8 @@ import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
 import { Toaster } from "@/components/ui/sonner"
-import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SplashWrapper } from "@/components/splash-wrapper"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });

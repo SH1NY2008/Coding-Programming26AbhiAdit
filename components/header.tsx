@@ -63,7 +63,7 @@ const navLinks = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const { user, signInWithGoogle, logout } = useAuth()
+  const { user, logout } = useAuth()
 
   /**
    * Checks if a navigation link is currently active
@@ -150,10 +150,14 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button onClick={signInWithGoogle} variant="default" size="sm" className="gap-2">
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild variant="default" size="sm">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
           )}
         </div>
 
@@ -224,10 +228,20 @@ export function Header() {
                     </Button>
                   </div>
                 ) : (
-                  <Button onClick={signInWithGoogle} className="w-full justify-start gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign In
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button asChild variant="outline" className="w-full justify-start gap-2">
+                      <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                        <LogIn className="h-4 w-4" />
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button asChild className="w-full justify-start gap-2">
+                      <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                        <UserCircle className="h-4 w-4" />
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </div>
                 )}
               </div>
             </SheetContent>

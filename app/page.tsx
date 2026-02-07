@@ -1,27 +1,16 @@
 "use client"
 
-import React, { useRef, useState, useEffect } from "react"
+import React, { useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "motion/react"
+import { motion, useScroll, useTransform } from "motion/react"
 import { ArrowUpRight, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { BusinessCard } from "@/components/business-card"
 import { getBusinesses, getActiveDeals } from "@/lib/data"
-import { SplashScreen } from "@/components/splash-screen"
 
 export default function HomePage() {
-  const [showSplash, setShowSplash] = useState(true)
-  return (
-    <>
-      <AnimatePresence mode="wait">
-        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      </AnimatePresence>
-
-      {!showSplash && <LandingPage />}
-    </>
-  )
+  return <LandingPage />
 }
 
 function LandingPage() {
@@ -39,7 +28,7 @@ function LandingPage() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black">
+    <div ref={containerRef} className="relative min-h-screen bg-background text-foreground">
           {/* Hero Section */}
           <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden px-4">
             <motion.div 
@@ -50,18 +39,18 @@ function LandingPage() {
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                className="text-[12vw] leading-[0.9] font-bold tracking-tighter uppercase mb-6 mix-blend-difference"
+                className="text-[10vw] md:text-[12vw] leading-[0.9] font-bold tracking-tighter uppercase mb-6"
               >
                 Business
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 to-neutral-600">Boost</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">Boost</span>
               </motion.h1>
               
               <motion.p 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-                className="text-xl md:text-2xl text-neutral-400 max-w-2xl mx-auto mb-12 font-light"
+                className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-12 font-light"
               >
                 Discover local gems, unlock exclusive deals, and support the heartbeat of your community.
               </motion.p>
@@ -75,34 +64,34 @@ function LandingPage() {
                 <div className="relative group w-full sm:w-auto">
                   <Input 
                     placeholder="Search businesses..." 
-                    className="h-12 w-full sm:w-80 bg-neutral-900/50 border-neutral-800 text-white rounded-full px-6 focus:ring-1 focus:ring-white transition-all duration-300"
+                    className="h-12 w-full sm:w-80 bg-background/50 backdrop-blur-sm border-border text-foreground rounded-full px-6 focus:ring-1 focus:ring-primary transition-all duration-300"
                   />
-                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
-                <Button size="lg" className="rounded-full bg-white text-black hover:bg-neutral-200 h-12 px-8 font-medium">
+                <Button size="lg" className="rounded-full h-12 px-8 font-medium">
                   Explore Map
                 </Button>
               </motion.div>
             </motion.div>
 
             {/* Background Elements */}
-            <div className="absolute inset-0 z-0 opacity-20">
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-purple-900 to-blue-900 rounded-full blur-[120px]" />
+            <div className="absolute inset-0 z-0 opacity-20 dark:opacity-30 pointer-events-none">
+               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-purple-500/30 to-blue-500/30 rounded-full blur-[120px]" />
             </div>
             
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1, duration: 1 }}
-              className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-500"
+              className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground"
             >
               <span className="text-xs uppercase tracking-widest">Scroll to explore</span>
-              <div className="w-[1px] h-12 bg-gradient-to-b from-neutral-500 to-transparent" />
+              <div className="w-[1px] h-12 bg-gradient-to-b from-muted-foreground to-transparent" />
             </motion.div>
           </section>
 
           {/* Marquee Section */}
-          <section className="py-20 border-y border-neutral-900 overflow-hidden bg-black">
+          <section className="py-20 border-y border-border overflow-hidden bg-muted/50">
             <div className="flex whitespace-nowrap overflow-hidden">
               <motion.div 
                 animate={{ x: ["0%", "-50%"] }}
@@ -110,11 +99,11 @@ function LandingPage() {
                 className="flex gap-20 items-center px-10"
               >
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="flex gap-20 text-8xl font-bold text-neutral-900 uppercase tracking-tighter select-none">
+                  <div key={i} className="flex gap-20 text-8xl font-bold text-muted-foreground/20 uppercase tracking-tighter select-none">
                     <span>Support Local</span>
-                    <span className="text-neutral-800">Find Deals</span>
+                    <span className="text-muted-foreground/10">Find Deals</span>
                     <span>Community First</span>
-                    <span className="text-neutral-800">Grow Together</span>
+                    <span className="text-muted-foreground/10">Grow Together</span>
                   </div>
                 ))}
               </motion.div>
@@ -125,9 +114,9 @@ function LandingPage() {
           <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
             <div className="flex justify-between items-end mb-16">
               <div>
-                <h2 className="text-4xl md:text-6xl font-bold mb-4">Featured <br/> <span className="text-neutral-500">Businesses</span></h2>
+                <h2 className="text-4xl md:text-6xl font-bold mb-4">Featured <br/> <span className="text-muted-foreground">Businesses</span></h2>
               </div>
-              <Button variant="outline" className="hidden md:flex rounded-full border-neutral-700 hover:bg-neutral-900 hover:text-white group">
+              <Button variant="outline" className="hidden md:flex rounded-full group">
                 View All <ArrowUpRight className="ml-2 w-4 h-4 group-hover:rotate-45 transition-transform" />
               </Button>
             </div>
@@ -139,16 +128,16 @@ function LandingPage() {
             </div>
             
              <div className="mt-12 flex justify-center md:hidden">
-              <Button variant="outline" className="rounded-full border-neutral-700 hover:bg-neutral-900 hover:text-white">
+              <Button variant="outline" className="rounded-full">
                 View All <ArrowUpRight className="ml-2 w-4 h-4" />
               </Button>
             </div>
           </section>
 
           {/* Deals Section - Horizontal Scroll */}
-          <section className="py-32 bg-neutral-950 border-t border-neutral-900">
+          <section className="py-32 bg-muted/30 border-t border-border">
              <div className="px-4 md:px-8 max-w-7xl mx-auto mb-16">
-                <h2 className="text-4xl md:text-6xl font-bold">Hot <span className="text-neutral-500">Deals</span></h2>
+                <h2 className="text-4xl md:text-6xl font-bold">Hot <span className="text-muted-foreground">Deals</span></h2>
              </div>
              
              <div className="overflow-x-auto pb-12 px-4 md:px-8 hide-scrollbar flex gap-6 snap-x snap-mandatory">
@@ -161,32 +150,32 @@ function LandingPage() {
                     viewport={{ once: true }}
                     className="min-w-[300px] md:min-w-[400px] snap-center"
                   >
-                    <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-900 mb-4 border border-neutral-800">
-                      <div className="absolute top-4 left-4 z-10 bg-white text-black text-xs font-bold px-3 py-1 rounded-full">
+                    <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-card mb-4 border border-border">
+                      <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                         {deal.dealType === 'percentage' ? `${deal.discountPercent}% OFF` : 'SPECIAL OFFER'}
                       </div>
-                      <div className="absolute inset-0 bg-neutral-800 animate-pulse" /> {/* Placeholder */}
+                      <div className="absolute inset-0 bg-muted/50 animate-pulse" /> {/* Placeholder */}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                         <Button className="rounded-full bg-white text-black hover:bg-neutral-200">Claim Deal</Button>
+                         <Button className="rounded-full">Claim Deal</Button>
                       </div>
                     </div>
                     <h3 className="text-xl font-bold mb-1">{deal.title}</h3>
-                    <p className="text-neutral-500 text-sm">{deal.description}</p>
+                    <p className="text-muted-foreground text-sm">{deal.description}</p>
                   </motion.div>
                 ))}
              </div>
           </section>
 
           {/* CTA Section */}
-          <section className="py-40 px-4 text-center bg-white text-black relative overflow-hidden">
+          <section className="py-40 px-4 text-center bg-primary text-primary-foreground relative overflow-hidden">
              <div className="max-w-4xl mx-auto relative z-10">
                <h2 className="text-5xl md:text-8xl font-bold tracking-tighter mb-8">Ready to Boost?</h2>
-               <p className="text-xl md:text-2xl text-neutral-600 mb-12 max-w-2xl mx-auto">Join thousands of local businesses and community members supporting the local economy.</p>
+               <p className="text-xl md:text-2xl text-primary-foreground/80 mb-12 max-w-2xl mx-auto">Join thousands of local businesses and community members supporting the local economy.</p>
                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                 <Button size="lg" className="h-14 px-10 rounded-full text-lg bg-black text-white hover:bg-neutral-800">
+                 <Button size="lg" variant="secondary" className="h-14 px-10 rounded-full text-lg">
                    Get Started
                  </Button>
-                 <Button size="lg" variant="outline" className="h-14 px-10 rounded-full text-lg border-neutral-300 hover:bg-neutral-100">
+                 <Button size="lg" variant="outline" className="h-14 px-10 rounded-full text-lg bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
                    Learn More
                  </Button>
                </div>
@@ -206,7 +195,7 @@ function CardItem({ business, index }: { business: any, index: number }) {
       className="group"
     >
       <Link href={`/business/${business.id}`}>
-        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-900 mb-4 border border-neutral-800">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-card mb-4 border border-border">
           <Image 
             src={business.imageUrl || "/placeholder.jpg"} 
             alt={business.name}

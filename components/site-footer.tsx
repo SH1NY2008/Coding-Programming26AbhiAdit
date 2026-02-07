@@ -34,12 +34,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      {/* Giant Text Footer */}
-      <div className="w-full overflow-hidden leading-none select-none pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center translate-y-[35%]">
-        <h1 className="text-[35vw] font-black text-foreground tracking-tighter text-center leading-[0.8]">
-          BYTE
-        </h1>
-      </div>
+      {/* Giant Text Footer - Removed for cleaner look */}
     </footer>
   )
 }
