@@ -3,14 +3,13 @@
 import React, { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion"
+import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "motion/react"
 import { ArrowUpRight, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { BusinessCard } from "@/components/business-card"
 import { getBusinesses, getActiveDeals } from "@/lib/data"
 import { SplashScreen } from "@/components/splash-screen"
-import { AnimatePresence } from "motion/react"
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true)

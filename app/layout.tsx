@@ -11,6 +11,8 @@ import { HelpChat } from '@/components/help-chat'
 import { Toaster } from "@/components/ui/sonner"
 import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { ThemeProvider } from "@/components/theme-provider"
+import { SplashWrapper } from "@/components/splash-wrapper"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -57,8 +59,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased bg-black text-white">
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background text-foreground">
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         <SmoothScroll>
           <AuthProvider>
             <AppProvider>
@@ -71,6 +79,7 @@ export default function RootLayout({
             </AppProvider>
           </AuthProvider>
         </SmoothScroll>
+        </ThemeProvider>
         <Toaster />
         <Analytics />
       </body>

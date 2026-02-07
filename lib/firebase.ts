@@ -3,6 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -44,6 +45,19 @@ if (typeof window !== "undefined") {
       analytics = getAnalytics(app);
     }
   });
+  
+  // Initialize App Check
+  if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+    try {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshEnabled: true
+      });
+      console.log("App Check initialized");
+    } catch (e) {
+      console.error("Error initializing App Check:", e);
+    }
+  }
 }
 
 export { app, auth, db, realtimeDb, analytics };

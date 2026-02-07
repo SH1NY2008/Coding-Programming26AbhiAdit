@@ -76,19 +76,15 @@ const CATEGORY_MAP: Record<string, { category: string; subcategory: string }> = 
   "commercial.supermarket": { category: "retail", subcategory: "Home Goods" },
   "commercial.shopping_mall": { category: "retail", subcategory: "Shopping Mall" },
   "commercial.clothing": { category: "retail", subcategory: "Clothing" },
-  "commercial.electronics": { category: "retail", subcategory: "Electronics" },
-  "commercial.gift": { category: "retail", subcategory: "Gifts" },
   "commercial.books": { category: "retail", subcategory: "Books" },
   
   // Services
   "healthcare": { category: "services", subcategory: "Healthcare" },
-  "healthcare.doctor": { category: "services", subcategory: "Healthcare" },
   "healthcare.pharmacy": { category: "services", subcategory: "Healthcare" },
   "healthcare.hospital": { category: "services", subcategory: "Healthcare" },
   "healthcare.dentist": { category: "services", subcategory: "Healthcare" },
   "service.vehicle": { category: "services", subcategory: "Automotive" },
   "service.beauty": { category: "services", subcategory: "Beauty & Spa" },
-  "service.hairdresser": { category: "services", subcategory: "Beauty & Spa" },
   "service.financial": { category: "services", subcategory: "Financial" },
   
   // Entertainment
@@ -130,7 +126,9 @@ export async function fetchNearbyBusinesses(
     const response = await fetch(url)
     
     if (!response.ok) {
-      throw new Error(`Geoapify API error: ${response.statusText}`)
+      const errorText = await response.text()
+      console.error("Geoapify API Error Details:", errorText)
+      throw new Error(`Geoapify API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
     
     const data: GeoapifyResponse = await response.json()
