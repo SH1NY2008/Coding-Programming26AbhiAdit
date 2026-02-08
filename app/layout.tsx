@@ -8,6 +8,7 @@ import { LocationProvider } from '@/lib/location-context'
 import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
+import { MainWrapper } from "@/components/main-wrapper"
 import { Toaster } from "@/components/ui/sonner"
 import { SplashWrapper } from "@/components/splash-wrapper"
 import { SmoothScroll } from "@/components/smooth-scroll"
@@ -87,7 +88,7 @@ export default function RootLayout({
             <AppProvider>
               <LocationProvider>
                 <Header />
-                <main id="main-content" className="min-h-screen pt-20">{children}</main>
+                <MainWrapper>{children}</MainWrapper>
                 <SiteFooter />
                 <HelpChat />
               </LocationProvider>

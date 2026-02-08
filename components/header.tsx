@@ -64,6 +64,10 @@ export function Header() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
 
+  if (pathname === "/login" || pathname === "/signup") {
+    return null
+  }
+
   /**
    * Checks if a navigation link is currently active
    */

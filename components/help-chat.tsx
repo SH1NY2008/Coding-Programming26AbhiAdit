@@ -109,6 +109,10 @@ export function HelpChat() {
   const inputRef = useRef<HTMLInputElement>(null)
   const pathname = usePathname()
 
+  if (pathname === "/login" || pathname === "/signup") {
+    return null
+  }
+
   // Add welcome message on first open
   useEffect(() => {
     if (isOpen && messages.length === 0) {

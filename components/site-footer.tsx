@@ -1,8 +1,17 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, MessageCircle, Store } from "lucide-react"
 
 export function SiteFooter() {
+  const pathname = usePathname()
+  
+  if (pathname === "/login" || pathname === "/signup") {
+    return null
+  }
+
   return (
     <footer className="relative bg-background pt-24 overflow-hidden">
       <div className="container mx-auto px-6 lg:px-12 relative z-10 flex flex-col items-center pt-20 pb-80">

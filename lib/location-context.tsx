@@ -89,9 +89,9 @@ export function LocationProvider({ children }: LocationProviderProps) {
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null)
   
   // Effective coordinates (manual or from geolocation)
-  // Hardcoded to Lafayette High School, Ballwin, MO for demo purposes
-  const effectiveLat = manualLocation?.lat ?? 38.59550; // geo.latitude
-  const effectiveLon = manualLocation?.lon ?? -90.63751; // geo.longitude
+  // Fallback to Lafayette High School, Ballwin, MO for demo purposes
+  const effectiveLat = manualLocation?.lat ?? geo.latitude ?? 38.59550
+  const effectiveLon = manualLocation?.lon ?? geo.longitude ?? -90.63751
 
   /**
    * Fetches location name via reverse geocoding
