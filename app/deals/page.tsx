@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tag, Clock, Percent, Gift, Ticket, TrendingUp, MapPin, ArrowUpRight } from "lucide-react";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Business, Deal } from "@/lib/data";
+import { fetchCoupons, mapCouponToDealAndBusiness } from "@/lib/coupon-api";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,41 @@ export default function DealsPage() {
   const { deals, businesses, addBusiness, addDeal } = useApp();
   const { getDistanceFromUser, locationError, isLoadingLocation, osmBusinesses, setSearchRadius } = useLocation();
   const [activeTab, setActiveTab] = useState("all");
+  const [loadingCoupons, setLoadingCoupons] = useState(false);
+
+  // Fetch coupons from API
+  useEffect(() => {
+    const loadCoupons = async () => {
+      setLoadingCoupons(true);
+      try {
+        const coupons = await fetchCoupons();
+        // Limit to 20 coupons for demo
+        const limitedCoupons = coupons.slice(0, 20);
+        
+        limitedCoupons.forEach(coupon => {
+          // Check if deal already exists to avoid duplicates
+          const dealId = `coupon-${coupon.offer_id}`;
+          if (deals.some(d => d.id === dealId)) return;
+
+          const { deal, business } = mapCouponToDealAndBusiness(coupon);
+          
+          // Add business if not exists
+          if (!businesses.some(b => b.id === business.id)) {
+            addBusiness(business);
+          }
+          
+          // Add deal
+          addDeal(deal);
+        });
+      } catch (error) {
+        console.error("Failed to load coupons", error);
+      } finally {
+        setLoadingCoupons(false);
+      }
+    };
+
+    loadCoupons();
+  }, [addBusiness, addDeal, deals, businesses]);
 
   // Set search radius to 5 miles (approx 8047 meters) on mount
   useEffect(() => {
@@ -69,6 +105,11 @@ export default function DealsPage() {
     return deals.filter((deal) => {
       const business = businesses.find((b) => b.id === deal.businessId);
       if (!business) return false;
+
+      // Always include online deals or deals with no specific location
+      if (business.address === "Online" || business.city === "Internet" || (business.latitude === 0 && business.longitude === 0)) {
+        return true;
+      }
 
       // Filter by location if available
       const distance = getDistanceFromUser(business.latitude, business.longitude);

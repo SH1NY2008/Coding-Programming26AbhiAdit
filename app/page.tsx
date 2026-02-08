@@ -193,6 +193,7 @@ function CardItem({ business, index }: { business: any, index: number }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true, margin: "-50px" }}
       className="group"
+      suppressHydrationWarning
     >
       <Link href={`/business/${business.id}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-card mb-4 border border-border">

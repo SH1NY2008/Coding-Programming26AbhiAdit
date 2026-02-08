@@ -1,6 +1,6 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Anton, Poppins } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AppProvider } from '@/lib/context'
 import { AuthProvider } from '@/lib/auth-context'
@@ -9,12 +9,27 @@ import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
 import { Toaster } from "@/components/ui/sonner"
+import { SplashWrapper } from "@/components/splash-wrapper"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { ThemeProvider } from "@/components/theme-provider"
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
+
+const anton = Anton({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-anton',
+  display: 'swap',
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Byte-Sized Business Boost | Support Local Small Businesses',
@@ -58,14 +73,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased bg-background text-foreground">
+      <body className={`font-sans antialiased bg-background text-foreground ${anton.variable} ${poppins.variable}`}>
         <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="dark"
+            forcedTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
           >
-        <SmoothScroll>
+        <SplashWrapper>
+          <SmoothScroll>
           <AuthProvider>
             <AppProvider>
               <LocationProvider>
@@ -77,6 +94,7 @@ export default function RootLayout({
             </AppProvider>
           </AuthProvider>
         </SmoothScroll>
+        </SplashWrapper>
         </ThemeProvider>
         <Toaster />
         <Analytics />

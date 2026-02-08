@@ -43,7 +43,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth-context"
-import { ModeToggle } from "@/components/mode-toggle"
 
 /**
  * Navigation link configuration
@@ -122,7 +121,6 @@ export function Header() {
 
         {/* Desktop Auth */}
         <div className="hidden lg:flex items-center gap-4">
-          <ModeToggle />
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -163,7 +161,6 @@ export function Header() {
 
         {/* Right Section: Accessibility & Mobile Menu */}
         <div className="flex items-center gap-2 lg:hidden">
-          <ModeToggle />
           {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
