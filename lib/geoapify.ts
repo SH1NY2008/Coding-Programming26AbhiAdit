@@ -130,6 +130,8 @@ export async function fetchNearbyBusinesses(
     const response = await fetch(url)
     
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Geoapify API Error: ${response.status} ${response.statusText}`, errorText)
       throw new Error(`Geoapify API error: ${response.statusText}`)
     }
     
