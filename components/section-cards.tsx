@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/card"
 
 interface SectionCardsProps {
-  totalBusinesses: number
-  totalReviews: number
-  averageRating: number
-  activeDeals: number
+  totalBusinesses?: number
+  totalReviews?: number
+  averageRating?: number
+  activeDeals?: number
 }
 
 export function SectionCards({ 

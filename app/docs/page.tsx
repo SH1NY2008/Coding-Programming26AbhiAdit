@@ -34,7 +34,7 @@ export default function DocsPage() {
           </div>
           <p className="text-xl text-muted-foreground leading-relaxed font-light">
             Technical documentation, copyright information, and FBLA submission materials.
-            Everything you need to understand the architecture and purpose of Byte-Sized Business Boost.
+            Everything you need to understand the architecture and purpose of Business Boost.
           </p>
         </div>
 
@@ -61,15 +61,16 @@ export default function DocsPage() {
                     Project Overview
                   </CardTitle>
                   <CardDescription className="text-base">
-                    Byte-Sized Business Boost - Supporting Local Communities
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <p className="text-foreground leading-relaxed text-lg font-light">
-                    Byte-Sized Business Boost is a web application designed to help users discover, 
-                    review, and support local small businesses in their community. The platform connects 
-                    consumers with local entrepreneurs, fostering economic growth and community engagement.
-                  </p>
+                  Business Boost - Supporting Local Communities
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-foreground leading-relaxed text-lg font-light">
+                  Business Boost is a web application designed to help users discover, 
+                  review, and support local small businesses. In an era dominated by large 
+                  corporations, our platform provides a dedicated space for community-driven 
+                  commerce, connecting entrepreneurs with the customers who care about local impact.
+                </p>
                   
                   <div className="grid gap-6">
                     <div className="p-6 bg-secondary/30 rounded-2xl border border-border/50">
@@ -293,7 +294,7 @@ export default function DocsPage() {
                 <div>
                   <h2 className="text-3xl font-bold mb-4">Copyright & Licensing</h2>
                   <p className="text-xl text-muted-foreground font-light">
-                    &copy; {new Date().getFullYear()} Byte-Sized Business Boost. All rights reserved.
+                    &copy; {new Date().getFullYear()} Business Boost. All rights reserved.
                   </p>
                 </div>
 

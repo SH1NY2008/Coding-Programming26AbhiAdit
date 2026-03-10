@@ -1,7 +1,5 @@
 import { Deal, Business } from "./data";
-
-const API_KEY = "39de6e3eba52240526d8acdc257f7fd7";
-const BASE_URL = "https://couponapi.org/api/getFeed/";
+import { CONFIG } from "./config";
 
 export interface CouponApiOffer {
   offer_id: string | number;
@@ -27,7 +25,12 @@ export interface CouponApiOffer {
 
 export async function fetchCoupons(): Promise<CouponApiOffer[]> {
   try {
-    const response = await fetch(`${BASE_URL}?API_KEY=${API_KEY}&format=json`);
+    // If running on client, use the proxy to avoid CORS
+    const url = typeof window !== 'undefined' 
+      ? '/api/coupons'
+      : `${CONFIG.COUPON_API.BASE_URL}?API_KEY=${CONFIG.COUPON_API.KEY}&format=json`;
+
+    const response = await fetch(url);
     if (!response.ok) {
       console.error("Failed to fetch coupons:", response.statusText);
       return [];

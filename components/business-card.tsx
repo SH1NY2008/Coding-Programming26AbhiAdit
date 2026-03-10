@@ -209,9 +209,9 @@ export function BusinessCard({
           {/* Tags */}
           {business.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-3">
-              {business.tags.slice(0, 3).map((tag) => (
+              {business.tags.slice(0, 3).map((tag, i) => (
                 <Badge
-                  key={tag}
+                  key={`${tag}-${i}`}
                   variant="outline"
                   className="text-xs font-normal"
                 >

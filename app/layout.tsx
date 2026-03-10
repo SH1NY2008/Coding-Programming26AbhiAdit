@@ -10,7 +10,6 @@ import { SiteFooter } from '@/components/site-footer'
 import { HelpChat } from '@/components/help-chat'
 import { MainWrapper } from "@/components/main-wrapper"
 import { Toaster } from "@/components/ui/sonner"
-import { SplashWrapper } from "@/components/splash-wrapper"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { ThemeProvider } from "@/components/theme-provider"
 import './globals.css'
@@ -33,7 +32,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Byte-Sized Business Boost | Support Local Small Businesses',
+  title: 'Business Boost | Support Local Small Businesses',
   description: 'Discover, review, and support local small businesses in your community. Find deals, save favorites, and help local entrepreneurs thrive.',
   keywords: ['local business', 'small business', 'reviews', 'deals', 'community', 'support local'],
   authors: [{ name: 'FBLA Chapter' }],
@@ -82,8 +81,7 @@ export default function RootLayout({
             enableSystem={false}
             disableTransitionOnChange
           >
-        <SplashWrapper>
-          <SmoothScroll>
+        <SmoothScroll>
           <AuthProvider>
             <AppProvider>
               <LocationProvider>
@@ -95,7 +93,6 @@ export default function RootLayout({
             </AppProvider>
           </AuthProvider>
         </SmoothScroll>
-        </SplashWrapper>
         </ThemeProvider>
         <Toaster />
         <Analytics />

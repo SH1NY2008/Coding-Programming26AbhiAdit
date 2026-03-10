@@ -146,6 +146,11 @@ function BrowseContent() {
   const [locationQuery, setLocationQuery] = useState("")
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [geocodeError, setGeocodeError] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   /**
    * Handles manual location submission
@@ -186,6 +191,8 @@ function BrowseContent() {
    * Filters and sorts business data from either OSM or mock source
    */
   const filteredBusinesses = useMemo(() => {
+    if (!isMounted) return []
+
     // Choose data source
     let sourceData: Business[] = dataSource === "osm" ? osmBusinesses : []
     

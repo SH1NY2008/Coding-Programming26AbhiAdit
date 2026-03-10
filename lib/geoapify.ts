@@ -8,6 +8,7 @@
  */
 
 import type { Business } from "./data"
+import { CONFIG } from "./config"
 
 // ============================================================================
 // Types
@@ -54,11 +55,11 @@ interface GeoapifyResponse {
 // Constants
 // ============================================================================
 
-const API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY || ""
-const BASE_URL = "https://api.geoapify.com/v2/places"
-const DETAILS_URL = "https://api.geoapify.com/v2/place-details"
-const GEOCODE_URL = "https://api.geoapify.com/v1/geocode/search"
-const REVERSE_GEOCODE_URL = "https://api.geoapify.com/v1/geocode/reverse"
+const API_KEY = CONFIG.GEOAPIFY.KEY
+const BASE_URL = CONFIG.GEOAPIFY.BASE_URL
+const DETAILS_URL = CONFIG.GEOAPIFY.DETAILS_URL
+const GEOCODE_URL = CONFIG.GEOAPIFY.GEOCODE_URL
+const REVERSE_GEOCODE_URL = CONFIG.GEOAPIFY.REVERSE_GEOCODE_URL
 
 /**
  * Mapping of Geoapify categories to our category system

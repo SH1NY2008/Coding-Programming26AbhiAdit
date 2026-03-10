@@ -118,7 +118,7 @@ export function HelpChat() {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
         id: "welcome",
-        text: `Hi! I'm here to help you navigate Byte-Sized Business Boost. Ask me anything about searching businesses, leaving reviews, bookmarking favorites, finding deals, or generating reports.`,
+        text: `Hi! I'm here to help you navigate Business Boost. Ask me anything about searching businesses, leaving reviews, bookmarking favorites, finding deals, or generating reports.`,
         isBot: true,
         timestamp: new Date(),
       }

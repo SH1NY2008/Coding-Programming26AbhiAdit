@@ -2,10 +2,21 @@
 
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useApp } from "@/lib/context"
+import { Onboarding } from "@/components/onboarding"
+import { useState, useEffect } from "react"
 
 export function MainWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { session } = useApp()
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const isAuthPage = pathname === "/login" || pathname === "/signup"
+
+  useEffect(() => {
+    if (session && !session.onboardingComplete && !isAuthPage) {
+      setShowOnboarding(true)
+    }
+  }, [session, isAuthPage])
 
   return (
     <main 
@@ -16,6 +27,7 @@ export function MainWrapper({ children }: { children: React.ReactNode }) {
       )}
     >
       {children}
+      <Onboarding open={showOnboarding} onOpenChange={setShowOnboarding} />
     </main>
   )
 }

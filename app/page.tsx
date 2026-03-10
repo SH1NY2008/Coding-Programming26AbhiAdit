@@ -14,7 +14,8 @@ import {
   DialogTrigger,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { getBusinesses, getActiveDeals } from "@/lib/data"
+import { getBusinesses, getActiveDeals, initializeData } from "@/lib/data"
+import type { Business, Deal } from "@/lib/data"
 import { useLocation } from "@/lib/location-context"
 
 // Dynamically import Map components to avoid SSR issues with Leaflet
@@ -61,8 +62,15 @@ const MapSearchControl = dynamic(
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const businesses = getBusinesses()
-  const deals = getActiveDeals()
+  const [businesses, setBusinesses] = useState<Business[]>([])
+  const [deals, setDeals] = useState<Deal[]>([])
+  
+  useEffect(() => {
+    initializeData()
+    setBusinesses(getBusinesses())
+    setDeals(getActiveDeals())
+  }, [])
+
   const { latitude, longitude, locationInfo, osmBusinesses } = useLocation()
   const [isMapOpen, setIsMapOpen] = useState(false)
   
@@ -324,7 +332,7 @@ export default function LandingPage() {
   )
 }
 
-function CardItem({ business, index }: { business: any, index: number }) {
+function CardItem({ business, index }: { business: Business, index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -332,7 +340,6 @@ function CardItem({ business, index }: { business: any, index: number }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true, margin: "-50px" }}
       className="group"
-      suppressHydrationWarning
     >
       <Link href={`/business/${business.id}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-card mb-4 border border-border">

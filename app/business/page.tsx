@@ -190,7 +190,7 @@ function BusinessDetailContent() {
   const handleShare = async () => {
     const shareData = {
       title: business.name,
-      text: `Check out ${business.name} on Byte-Sized Business Boost!`,
+      text: `Check out ${business.name} on Business Boost!`,
       url: window.location.href,
     }
 

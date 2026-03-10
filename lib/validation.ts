@@ -2,7 +2,7 @@
  * Input Validation Utilities
  * 
  * This module provides comprehensive validation functions for all user inputs
- * in the Byte-Sized Business Boost application. Includes both syntactical and
+ * in the Business Boost application. Includes both syntactical and
  * semantic validation with user-friendly error messages.
  * 
  * @module validation

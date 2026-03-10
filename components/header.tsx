@@ -23,6 +23,7 @@ import {
   LogIn,
   LogOut,
   UserCircle,
+  GalleryVerticalEnd,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -90,10 +91,13 @@ export function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-bold text-2xl tracking-tighter text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
-          aria-label="Byte-Sized Business Boost - Home"
+          className="flex items-center gap-3 font-bold text-xl tracking-tight text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
+          aria-label="Business Boost - Home"
         >
-          <span>BYTE-SIZED<span className="text-primary">BOOST</span></span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <GalleryVerticalEnd className="size-5" />
+          </div>
+          <span>BUSINESS<span className="text-primary ml-1">BOOST</span></span>
         </Link>
 
         {/* Desktop Navigation */}

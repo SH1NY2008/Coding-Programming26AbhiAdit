@@ -1,6 +1,6 @@
 {
-  "name": "Byte-Sized Business Boost",
-  "short_name": "ByteBoost",
+  "name": "Business Boost",
+  "short_name": "Business Boost",
   "description": "Support local small businesses in your community",
   "start_url": "/",
   "display": "standalone",

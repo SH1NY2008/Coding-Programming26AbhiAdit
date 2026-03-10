@@ -1,5 +1,5 @@
 /**
- * Data Layer for Byte-Sized Business Boost
+ * Data Layer for Business Boost
  * 
  * This module manages all data operations for the application using localStorage
  * for persistence. It includes type definitions, mock data generation, and CRUD
@@ -1468,7 +1468,7 @@ export const exportReport = (data: ReportData, format: 'csv' | 'json'): string =
   
   // CSV format
   const lines: string[] = [
-    'Byte-Sized Business Boost Report',
+    'Business Boost Report',
     `Generated: ${new Date().toLocaleDateString()}`,
     '',
     'Summary Statistics',

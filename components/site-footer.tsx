@@ -33,7 +33,7 @@ export function SiteFooter() {
 
         {/* Legal & Copyright */}
         <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-xs text-muted-foreground">
-          <span>© 2026 Byte-Sized Boost</span>
+          <span>© 2026 Business Boost</span>
           <Link href="/privacy" className="hover:text-primary transition-colors">
             Privacy Policy
           </Link>
