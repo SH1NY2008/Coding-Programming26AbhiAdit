@@ -101,6 +101,14 @@ function BusinessDetailContent() {
   const [helpfulReviews, setHelpfulReviews] = useState<Set<string>>(new Set())
   const [showAllHours, setShowAllHours] = useState(false)
   const [reviewsLimit, setReviewsLimit] = useState(5)
+  const [crawledImages, setCrawledImages] = useState<string[]>([])
+
+  const handleCrawlImages = async () => {
+    if (!business) return
+    const response = await fetch(`/api/crawl-images?query=${business.name}`)
+    const data = await response.json()
+    setCrawledImages(data.images)
+  }
 
   const bookmarked = business ? bookmarks.includes(business.id) : false
 
@@ -357,6 +365,31 @@ function BusinessDetailContent() {
                     <Badge key={tag} variant="secondary" className="px-3 py-1 bg-secondary/50 text-secondary-foreground">
                       {tag}
                     </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Crawled Images Section */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <h2 className="text-3xl font-bold">Crawled Images</h2>
+                <Button onClick={handleCrawlImages}>Crawl Images</Button>
+              </div>
+              {crawledImages.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {crawledImages.map((src, index) => (
+                    <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                      <Image
+                        src={src}
+                        alt={`${business.name} crawled image ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    </div>
                   ))}
                 </div>
               )}

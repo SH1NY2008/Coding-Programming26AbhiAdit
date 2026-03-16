@@ -1,13 +1,5 @@
-"use client"
 
-/**
- * Application Context Provider
- * 
- * Manages global application state including user session, theme preferences,
- * and provides data access methods to all components.
- * 
- * @module context
- */
+"use client"
 
 import {
   createContext,
@@ -17,10 +9,10 @@ import {
   useCallback,
   type ReactNode,
 } from "react"
+import { auth } from "./firebase"
+import { onAuthStateChanged, type User } from "firebase/auth"
 import {
   initializeData,
-  getSession,
-  updateSession,
   getBusinesses,
   getDeals,
   getReviews,
@@ -30,23 +22,14 @@ import {
   isBookmarked,
   saveBusiness,
   saveDeal,
-  type UserSession,
   type Business,
   type Deal,
   type Review,
 } from "./data"
-import { useAuth } from "@/lib/auth-context"
-import { useFavorites } from "@/hooks/use-favorites"
 
-/**
- * Application context value interface
- */
 interface AppContextValue {
-  session: UserSession | null
-  highContrastMode: boolean
-  toggleHighContrast: () => void
-  completeOnboarding: () => void
-  isLoading: boolean
+  user: User | null
+  loading: boolean
   businesses: Business[]
   deals: Deal[]
   reviews: Review[]
@@ -59,26 +42,22 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | null>(null)
 
-/**
- * Application Context Provider Component
- * Initializes data and manages global state
- * 
- * @param children - Child components to wrap
- */
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
-  const { favoriteIds, toggleFavorite } = useFavorites()
-  const [session, setSession] = useState<UserSession | null>(null)
-  const [highContrastMode, setHighContrastMode] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [businesses, setBusinesses] = useState<Business[]>([])
   const [deals, setDeals] = useState<Deal[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
   const [bookmarks, setBookmarks] = useState<string[]>([])
 
-  /**
-   * Refreshes all data from localStorage
-   */
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      setUser(user)
+      setLoading(false)
+    })
+    return () => unsubscribe()
+  }, [])
+
   const refreshData = useCallback(() => {
     setBusinesses(getBusinesses())
     setDeals(getDeals())
@@ -88,90 +67,58 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBookmarks(allBookmarkedIds)
   }, [])
 
-  // Initialize data and session on mount
   useEffect(() => {
-    initializeData()
-    const currentSession = getSession()
-    setSession(currentSession)
-    setHighContrastMode(currentSession?.highContrastMode || false)
-    refreshData()
-    setIsLoading(false)
-  }, [refreshData])
-
-  // Apply high contrast mode to document
-  useEffect(() => {
-    if (highContrastMode) {
-      document.documentElement.classList.add("high-contrast")
-    } else {
-      document.documentElement.classList.remove("high-contrast")
-    }
-  }, [highContrastMode])
-
-  /**
-   * Toggles high contrast mode for accessibility
-   */
-  const toggleHighContrast = () => {
-    const newValue = !highContrastMode
-    setHighContrastMode(newValue)
-    updateSession({ highContrastMode: newValue })
-    setSession((prev) => (prev ? { ...prev, highContrastMode: newValue } : null))
-  }
-
-  /**
-   * Marks onboarding as complete for the current session
-   */
-  const completeOnboarding = () => {
-    updateSession({ onboardingComplete: true })
-    setSession((prev) => (prev ? { ...prev, onboardingComplete: true } : null))
-  }
-
-  /**
-   * Toggles bookmark status for a business
-   */
-  const toggleBookmark = useCallback((businessId: string, business?: Business) => {
-    if (user) {
-      toggleFavorite(businessId)
-      return
-    }
-
-    const folders = getBookmarkFolders()
-    const defaultFolder = folders.find(f => f.id === 'default') || folders[0]
-    
-    if (defaultFolder) {
-      if (isBookmarked(businessId)) {
-        removeBookmark(defaultFolder.id, businessId)
-      } else {
-        if (business) {
-          saveBusiness(business)
-        }
-        addBookmark(defaultFolder.id, businessId)
-      }
+    if (!loading) {
+      initializeData()
       refreshData()
     }
-  }, [refreshData, user, toggleFavorite])
+  }, [loading, refreshData])
 
-  const addBusiness = useCallback((business: Business) => {
-    saveBusiness(business)
-    refreshData()
-  }, [refreshData])
+  const toggleBookmark = useCallback(
+    (businessId: string, business?: Business) => {
+      const folders = getBookmarkFolders()
+      const defaultFolder = folders.find(f => f.id === "default") || folders[0]
 
-  const addDeal = useCallback((deal: Deal) => {
-    saveDeal(deal)
-    refreshData()
-  }, [refreshData])
+      if (defaultFolder) {
+        if (isBookmarked(businessId)) {
+          removeBookmark(defaultFolder.id, businessId)
+        } else {
+          if (business) {
+            saveBusiness(business)
+          }
+          addBookmark(defaultFolder.id, businessId)
+        }
+        refreshData()
+      }
+    },
+    [refreshData]
+  )
+
+  const addBusiness = useCallback(
+    (business: Business) => {
+      saveBusiness(business)
+      refreshData()
+    },
+    [refreshData]
+  )
+
+  const addDeal = useCallback(
+    (deal: Deal) => {
+      saveDeal(deal)
+      refreshData()
+    },
+    [refreshData]
+  )
 
   return (
     <AppContext.Provider
       value={{
-        session,
-        highContrastMode,
-        toggleHighContrast,
-        completeOnboarding,
-        isLoading,
+        user,
+        loading,
         businesses,
         deals,
         reviews,
-        bookmarks: user ? favoriteIds : bookmarks,
+        bookmarks,
         toggleBookmark,
         addBusiness,
         addDeal,
@@ -183,11 +130,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   )
 }
 
-/**
- * Hook to access application context
- * @returns AppContextValue
- * @throws Error if used outside AppProvider
- */
 export function useApp() {
   const context = useContext(AppContext)
   if (!context) {

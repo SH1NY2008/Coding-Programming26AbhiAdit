@@ -70,7 +70,8 @@ import { validateSearchQuery } from "@/lib/validation"
 import { cn } from "@/lib/utils"
 import { Slider } from "@/components/ui/slider"
 import { Marquee } from "@/components/marquee"
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "motion/react";
+import { useMounted } from "@/lib/hooks/use-mounted";
 
 /**
  * Sort options for business listings
@@ -146,11 +147,7 @@ function BrowseContent() {
   const [locationQuery, setLocationQuery] = useState("")
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [geocodeError, setGeocodeError] = useState<string | null>(null)
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  const isMounted = useMounted()
 
   /**
    * Handles manual location submission
@@ -554,7 +551,7 @@ function BrowseContent() {
                 ) : (
                   <span>Discover local gems</span>
                 )}
-                {!isLoadingLocation && (
+                {isMounted && (
                   <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
                     <DialogTrigger asChild>
                       <Button

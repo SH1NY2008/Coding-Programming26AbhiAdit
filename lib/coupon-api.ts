@@ -23,12 +23,20 @@ export interface CouponApiOffer {
   rating: number;
 }
 
-export async function fetchCoupons(): Promise<CouponApiOffer[]> {
+export async function fetchCoupons(lat?: number, lon?: number): Promise<CouponApiOffer[]> {
   try {
-    // If running on client, use the proxy to avoid CORS
-    const url = typeof window !== 'undefined' 
-      ? '/api/coupons'
-      : `${CONFIG.COUPON_API.BASE_URL}?API_KEY=${CONFIG.COUPON_API.KEY}&format=json`;
+    let url = '/api/coupons';
+    if (typeof window !== 'undefined') {
+      if (lat && lon) {
+        url = `/api/coupons?lat=${lat}&lon=${lon}`;
+      } else {
+        // Fallback or error if location is required but not provided client-side
+        console.warn("Fetching coupons without location data.");
+      }
+    } else {
+      // Server-side rendering, direct call
+      url = `${CONFIG.COUPON_API.BASE_URL}?API_KEY=${CONFIG.COUPON_API.KEY}&format=json`;
+    }
 
     const response = await fetch(url);
     if (!response.ok) {

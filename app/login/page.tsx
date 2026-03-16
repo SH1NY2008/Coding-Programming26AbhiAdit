@@ -1,46 +1,45 @@
+
 "use client"
 
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth-context"
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
+import { auth } from "@/lib/firebase"
+import { GalleryVerticalEnd } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
-import { Loader2, GalleryVerticalEnd } from "lucide-react"
+
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { signInWithEmail, signInWithGoogle } = useAuth()
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-
+    setError(null)
     try {
-      await signInWithEmail(email, password)
-      toast.success("Logged in successfully")
+      await signInWithEmailAndPassword(auth, email, password)
       router.push("/")
     } catch (error: any) {
-      toast.error(error.message || "Failed to login")
-    } finally {
-      setIsLoading(false)
+      setError(error.message)
     }
   }
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle()
-      toast.success("Logged in successfully")
-      router.push("/")
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/");
     } catch (error: any) {
-      toast.error(error.message || "Failed to login with Google")
+      setError(error.message);
     }
-  }
+  };
 
   return (
     <div className="grid h-screen w-full lg:grid-cols-2 overflow-hidden">
@@ -54,76 +53,56 @@ export default function LoginPage() {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <form onSubmit={handleLogin} className="flex flex-col gap-6">
-              <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">Login to your account</h1>
-                <p className="text-balance text-sm text-muted-foreground">
-                  Enter your email below to login to your account
-                </p>
-              </div>
-              <div className="grid gap-6">
-                <div className="grid gap-2">
+          <div className="w-full max-w-xs text-center">
+            <h1 className="text-2xl font-bold">Login</h1>
+            <p className="text-balance text-sm text-muted-foreground mt-2">
+              Enter your email below to login to your account
+            </p>
+            <form onSubmit={handleLogin} className="mt-4 text-left">
+              <div className="grid gap-2">
+                <div className="grid gap-1">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="m@example.com"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                     required
                   />
                 </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
-                  </div>
+                <div className="grid gap-1">
+                  <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Login
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                <Button type="submit" className="w-full mt-2">Login</Button>
+                <Button variant="outline" className="w-full mt-2" onClick={handleGoogleSignIn}>
+                  <FcGoogle className="mr-2 h-4 w-4" />
+                  Sign in with Google
                 </Button>
-                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                  <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-                <Button variant="outline" type="button" className="w-full" onClick={handleGoogleLogin}>
-                  <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
-                    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
-                  </svg>
-                  Continue with Google
-                </Button>
-              </div>
-              <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline underline-offset-4">
-                  Sign up
-                </Link>
               </div>
             </form>
+            <p className="text-sm text-muted-foreground mt-4">
+              Don't have an account?{" "}
+              <Link href="/signup" className="underline">
+                Sign up
+              </Link>
+            </p>
           </div>
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
         <div className="flex h-full w-full items-center justify-center bg-zinc-900">
-           {/* Placeholder for the image in the design */}
-           <div className="rounded-full border border-white/10 p-12">
-             <GalleryVerticalEnd className="size-24 text-white/20" />
-           </div>
+          <div className="rounded-full border border-white/10 p-12">
+            <GalleryVerticalEnd className="size-24 text-white/20" />
+          </div>
         </div>
       </div>
     </div>

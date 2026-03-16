@@ -3,14 +3,13 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono, Anton, Poppins } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AppProvider } from '@/lib/context'
-import { AuthProvider } from '@/lib/auth-context'
 import { LocationProvider } from '@/lib/location-context'
 import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
-import { HelpChat } from '@/components/help-chat'
+import { HelpChatController } from '@/components/help-chat-controller'
 import { MainWrapper } from "@/components/main-wrapper"
 import { Toaster } from "@/components/ui/sonner"
-import { SmoothScroll } from "@/components/smooth-scroll"
+import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
 import { ThemeProvider } from "@/components/theme-provider"
 import './globals.css'
 
@@ -77,22 +76,19 @@ export default function RootLayout({
         <ThemeProvider
             attribute="class"
             defaultTheme="dark"
-            forcedTheme="dark"
-            enableSystem={false}
+            enableSystem
             disableTransitionOnChange
           >
-        <SmoothScroll>
-          <AuthProvider>
+        <SmoothScrollProvider>
             <AppProvider>
               <LocationProvider>
                 <Header />
                 <MainWrapper>{children}</MainWrapper>
                 <SiteFooter />
-                <HelpChat />
+                <HelpChatController />
               </LocationProvider>
             </AppProvider>
-          </AuthProvider>
-        </SmoothScroll>
+        </SmoothScrollProvider>
         </ThemeProvider>
         <Toaster />
         <Analytics />

@@ -12,7 +12,7 @@ import React from "react"
  */
 
 import { useState, useRef, useEffect } from "react"
-import { usePathname } from "next/navigation"
+
 import {
   MessageCircleQuestion,
   X,
@@ -101,17 +101,13 @@ interface Message {
  * Help Chat Floating Component
  * Provides FAQ-based assistance with contextual help
  */
-export function HelpChat() {
+export function HelpChat({ pathname }: { pathname: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const pathname = usePathname()
-
-  if (pathname === "/login" || pathname === "/signup") {
-    return null
-  }
+  
 
   // Add welcome message on first open
   useEffect(() => {

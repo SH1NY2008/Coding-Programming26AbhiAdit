@@ -43,7 +43,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
-import { useAuth } from "@/lib/auth-context"
+import { useApp } from "@/lib/context"
+import { auth } from "@/lib/firebase"
+import { signOut } from "firebase/auth"
 
 /**
  * Navigation link configuration
@@ -62,8 +64,12 @@ const navLinks = [
  */
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const pathname = usePathname()
-  const { user, logout } = useAuth()
+    const pathname = usePathname()
+  const { user } = useApp()
+
+  const handleSignOut = async () => {
+    await signOut(auth)
+  }
 
   if (pathname === "/login" || pathname === "/signup") {
     return null
@@ -132,27 +138,18 @@ export function Header() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                    <AvatarFallback>{user.displayName?.slice(0, 2).toUpperCase() || "CN"}</AvatarFallback>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.photoURL || undefined} />
+                    <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
                   </Avatar>
+                  <span>{user.email}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName || "User"}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -214,37 +211,16 @@ export function Header() {
                   )
                 })}
               </nav>
-              <div className="mt-6 pt-6 border-t border-border">
+              <div className="border-t pt-4 mt-4">
                 {user ? (
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                        <AvatarFallback>{user.displayName?.slice(0, 2).toUpperCase() || "CN"}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">{user.displayName || "User"}</span>
-                        <span className="text-xs text-muted-foreground">{user.email}</span>
-                      </div>
-                    </div>
-                    <Button onClick={logout} variant="outline" className="w-full justify-start gap-2">
-                      <LogOut className="h-4 w-4" />
-                      Log out
-                    </Button>
-                  </div>
+                  <Button variant="outline" className="w-full" onClick={handleSignOut}>Sign Out</Button>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    <Button asChild variant="outline" className="w-full justify-start gap-2">
-                      <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                        <LogIn className="h-4 w-4" />
-                        Sign In
-                      </Link>
+                    <Button asChild variant="default" className="w-full">
+                      <Link href="/signup">Sign Up</Link>
                     </Button>
-                    <Button asChild className="w-full justify-start gap-2">
-                      <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
-                        <UserCircle className="h-4 w-4" />
-                        Sign Up
-                      </Link>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/login">Sign In</Link>
                     </Button>
                   </div>
                 )}

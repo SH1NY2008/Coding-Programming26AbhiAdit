@@ -17,20 +17,20 @@ import { Marquee } from "@/components/marquee";
 
 export default function DealsPage() {
   const { deals, businesses, addBusiness, addDeal } = useApp();
-  const { getDistanceFromUser, locationError, isLoadingLocation, osmBusinesses, setSearchRadius } = useLocation();
+  const { latitude, longitude, getDistanceFromUser, locationError, isLoadingLocation, osmBusinesses, setSearchRadius } = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [loadingCoupons, setLoadingCoupons] = useState(false);
 
   // Fetch coupons from API
   useEffect(() => {
     const loadCoupons = async () => {
+      if (!latitude || !longitude) return;
+
       setLoadingCoupons(true);
       try {
-        const coupons = await fetchCoupons();
-        // Limit to 20 coupons for demo
-        const limitedCoupons = coupons.slice(0, 20);
+        const coupons = await fetchCoupons(latitude, longitude);
         
-        limitedCoupons.forEach(coupon => {
+        coupons.forEach(coupon => {
           // Check if deal already exists to avoid duplicates
           const dealId = `coupon-${coupon.offer_id}`;
           if (deals.some(d => d.id === dealId)) return;
@@ -53,7 +53,7 @@ export default function DealsPage() {
     };
 
     loadCoupons();
-  }, [addBusiness, addDeal, deals, businesses]);
+  }, [latitude, longitude, addBusiness, addDeal, deals, businesses]);
 
   // Set search radius to 5 miles (approx 8047 meters) on mount
   useEffect(() => {
