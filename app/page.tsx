@@ -14,8 +14,7 @@ import {
   DialogTrigger,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { getBusinesses, getActiveDeals, initializeData } from "@/lib/data"
-import type { Business, Deal } from "@/lib/data"
+import { getBusinesses, getActiveDeals, initializeData, type Business, type Deal } from "@/lib/data"
 import { useLocation } from "@/lib/location-context"
 
 // Dynamically import Map components to avoid SSR issues with Leaflet
@@ -164,11 +163,11 @@ export default function LandingPage() {
                     
                     <MapZoomControl position="bottom-right" />
                     <MapFullscreenControl position="top-right" />
-                    <MapLocateControl position="bottom-right" />
+                    <MapLocateControl position="bottom-right" watch={true} />
                     
                     {/* User Location Marker */}
                     {latitude && longitude && (
-                      <MapMarker position={[latitude, longitude]}>
+                      <MapMarker position={[latitude, longitude]} iconAnchor={[12, 41]} bgPos={[0, 0]} popupAnchor={[1, -34]} tooltipAnchor={[16, -28]}>
                         <MapPopup>
                           <div className="p-2 min-w-[150px]">
                             <h3 className="font-bold text-sm mb-1">You are here</h3>
@@ -191,13 +190,17 @@ export default function LandingPage() {
                            <MapMarker 
                              key={business.id} 
                              position={[lat, lng]}
+                             iconAnchor={[12, 41]}
+                             bgPos={[0, 0]}
+                             popupAnchor={[1, -34]}
+                             tooltipAnchor={[16, -28]}
                            >
                              <MapPopup>
                                <div className="p-2 w-[200px]">
                                  <div className="relative h-24 w-full mb-2 rounded-md overflow-hidden">
                                    <Image 
                                      src={business.imageUrl || "/placeholder.jpg"} 
-                                     alt={business.name}
+                                     alt={`${business.name} storefront`}
                                      fill
                                      className="object-cover"
                                    />
@@ -269,7 +272,7 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {businesses.slice(0, 6).map((business, index) => (
+          {businesses.slice(0, 6).map((business: Business, index: number) => (
             <CardItem key={business.id} business={business} index={index} />
           ))}
         </div>
@@ -288,7 +291,7 @@ export default function LandingPage() {
          </div>
          
          <div className="overflow-x-auto pb-12 px-4 md:px-8 hide-scrollbar flex gap-6 snap-x snap-mandatory">
-            {deals.map((deal, index) => (
+            {deals.map((deal: Deal, index: number) => (
               <motion.div 
                 key={deal.id}
                 initial={{ opacity: 0, x: 50 }}
@@ -345,7 +348,7 @@ function CardItem({ business, index }: { business: Business, index: number }) {
         <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-card mb-4 border border-border">
           <Image 
             src={business.imageUrl || "/placeholder.jpg"} 
-            alt={business.name}
+            alt={`${business.name} storefront`}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />

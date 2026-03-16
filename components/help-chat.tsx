@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
 /**
  * FAQ database with questions and answers
@@ -105,6 +106,7 @@ export function HelpChat({ pathname }: { pathname: string }) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   
@@ -178,8 +180,32 @@ export function HelpChat({ pathname }: { pathname: string }) {
   /**
    * Handles sending a message
    */
-  const handleSend = (text: string = input.trim()) => {
-    if (!text) return
+  const handleSend = async (text: string = input.trim()) => {
+    if (!text || !executeRecaptcha) return
+
+    const token = await executeRecaptcha("chat_submit")
+
+    try {
+      const response = await fetch("/api/verify-recaptcha", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+
+      if (!data.success) {
+        console.error("reCAPTCHA verification failed:", data.error)
+        // Optionally, show an error message to the user
+        return
+      }
+    } catch (error) {
+      console.error("Error verifying reCAPTCHA:", error)
+      // Optionally, show an error message to the user
+      return
+    }
 
     // Add user message
     const userMessage: Message = {

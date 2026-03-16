@@ -1,20 +1,21 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono, Anton, Poppins } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import { AppProvider } from '@/lib/context'
-import { LocationProvider } from '@/lib/location-context'
-import { Header } from '@/components/header'
-import { SiteFooter } from '@/components/site-footer'
-import { HelpChatController } from '@/components/help-chat-controller'
-import { MainWrapper } from "@/components/main-wrapper"
-import { Toaster } from "@/components/ui/sonner"
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider";
-import { ThemeProvider } from "@/components/theme-provider"
+
+import { Anton, Poppins, Inter, Roboto_Mono } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+ 
+const roboto_mono = Roboto_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
+import { ClientProviders } from "./client-providers"
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+
 
 const anton = Anton({
   subsets: ['latin'],
@@ -72,26 +73,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased bg-background text-foreground ${anton.variable} ${poppins.variable}`}>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-        <SmoothScrollProvider>
-            <AppProvider>
-              <LocationProvider>
-                <Header />
-                <MainWrapper>{children}</MainWrapper>
-                <SiteFooter />
-                <HelpChatController />
-              </LocationProvider>
-            </AppProvider>
-        </SmoothScrollProvider>
-        </ThemeProvider>
-        <Toaster />
-        <Analytics />
+      <body className={`font-sans antialiased bg-background text-foreground ${anton.variable} ${poppins.variable} ${inter.variable} ${roboto_mono.variable}`}>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   )

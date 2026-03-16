@@ -64,7 +64,7 @@ export const HoverEffect = ({
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg mb-4">
                 <Image
                   src={item.image}
-                  alt={item.title}
+                  alt={`${item.title} image`}
                   fill
                   className="object-cover"
                 />
