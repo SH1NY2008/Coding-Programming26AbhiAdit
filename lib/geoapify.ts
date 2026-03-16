@@ -111,7 +111,8 @@ const CATEGORY_MAP: Record<string, { category: string; subcategory: string }> = 
 export async function fetchNearbyBusinesses(
   lat: number,
   lon: number,
-  radius: number = 2000
+  radius: number = 2000,
+  categories?: string[],
 ): Promise<Business[]> {
   if (!API_KEY) {
     console.warn("Geoapify API key not found")
@@ -119,9 +120,11 @@ export async function fetchNearbyBusinesses(
   }
 
   // Categories to search for (comma-separated)
-  const categories = Object.keys(CATEGORY_MAP).join(",")
-  
-  const url = `${BASE_URL}?categories=${categories}&filter=circle:${lon},${lat},${radius}&limit=30&apiKey=${API_KEY}`
+  const categoriesToSearch = categories
+    ? categories.join(",")
+    : Object.keys(CATEGORY_MAP).join(",")
+
+  const url = `${BASE_URL}?categories=${categoriesToSearch}&filter=circle:${lon},${lat},${radius}&limit=30&apiKey=${API_KEY}`
   
   try {
     const response = await fetch(url)
@@ -138,6 +141,36 @@ export async function fetchNearbyBusinesses(
     console.error("Error fetching businesses from Geoapify:", error)
     throw error
   }
+}
+
+/**
+ * Fetches nearby restaurants from Geoapify
+ * @param lat - Latitude
+ * @param lon - Longitude
+ * @param radius - Search radius in meters
+ * @returns Array of mapped businesses
+ */
+export async function fetchNearbyRestaurants(
+  lat: number,
+  lon: number,
+  radius: number = 2000,
+): Promise<Business[]> {
+  return fetchNearbyBusinesses(lat, lon, radius, ["catering.restaurant"]);
+}
+
+/**
+ * Fetches nearby supermarkets from Geoapify
+ * @param lat - Latitude
+ * @param lon - Longitude
+ * @param radius - Search radius in meters
+ * @returns Array of mapped businesses
+ */
+export async function fetchNearbySupermarkets(
+  lat: number,
+  lon: number,
+  radius: number = 2000,
+): Promise<Business[]> {
+  return fetchNearbyBusinesses(lat, lon, radius, ["commercial.supermarket"]);
 }
 
 /**

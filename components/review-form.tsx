@@ -26,6 +26,7 @@ import {
   validateDisplayName,
 } from "@/lib/validation"
 import { cn } from "@/lib/utils"
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
 interface ReviewFormProps {
   businessId: string
@@ -50,10 +51,8 @@ export function ReviewForm({
   const [comment, setComment] = useState("")
   const [userName, setUserName] = useState("")
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const [submitStatus, setSubmitStatus] = useState<{
-    type: "success" | "error" | null
-    message: string
-  }>({ type: null, message: "" })
+  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error" | null; message: string }>({ type: null, message: "" })
+  const { executeRecaptcha } = useGoogleReCaptcha()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   /**
@@ -94,7 +93,36 @@ export function ReviewForm({
     setIsSubmitting(true)
     setSubmitStatus({ type: null, message: "" })
 
+    if (!executeRecaptcha) {
+      setSubmitStatus({
+        type: "error",
+        message: "reCAPTCHA not available",
+      })
+      setIsSubmitting(false)
+      return
+    }
+
     try {
+      const token = await executeRecaptcha("review_submit")
+      const response = await fetch("/api/verify-recaptcha", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+
+      if (!data.success) {
+        setSubmitStatus({
+          type: "error",
+          message: "reCAPTCHA verification failed",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
       const result = addReview({
         businessId,
         userId: crypto.randomUUID(),

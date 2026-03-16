@@ -12,6 +12,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+
 import {
   Menu,
   X,
@@ -33,19 +34,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 import { cn } from "@/lib/utils"
-import { useApp } from "@/lib/context"
-import { auth } from "@/lib/firebase"
-import { signOut } from "firebase/auth"
+
+import { UserNav } from '@/components/user-nav'
 
 /**
  * Navigation link configuration
@@ -64,12 +56,7 @@ const navLinks = [
  */
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const pathname = usePathname()
-  const { user } = useApp()
-
-  const handleSignOut = async () => {
-    await signOut(auth)
-  }
+  const pathname = usePathname()
 
   if (pathname === "/login" || pathname === "/signup") {
     return null
@@ -135,33 +122,7 @@ export function Header() {
 
         {/* Desktop Auth */}
         <div className="hidden lg:flex items-center gap-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.photoURL || undefined} />
-                    <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <span>{user.email}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild variant="default" size="sm">
-                <Link href="/signup">Sign Up</Link>
-              </Button>
-            </div>
-          )}
+          <UserNav />
         </div>
 
         {/* Right Section: Accessibility & Mobile Menu */}
@@ -212,18 +173,7 @@ export function Header() {
                 })}
               </nav>
               <div className="border-t pt-4 mt-4">
-                {user ? (
-                  <Button variant="outline" className="w-full" onClick={handleSignOut}>Sign Out</Button>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <Button asChild variant="default" className="w-full">
-                      <Link href="/signup">Sign Up</Link>
-                    </Button>
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href="/login">Sign In</Link>
-                    </Button>
-                  </div>
-                )}
+                <UserNav />
               </div>
             </SheetContent>
           </Sheet>

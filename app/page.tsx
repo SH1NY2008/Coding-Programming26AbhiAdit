@@ -15,6 +15,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { getBusinesses, getActiveDeals, initializeData, type Business, type Deal } from "@/lib/data"
+import { fetchNearbyRestaurants } from "@/lib/geoapify"
+
 import { useLocation } from "@/lib/location-context"
 
 // Dynamically import Map components to avoid SSR issues with Leaflet
@@ -63,6 +65,7 @@ export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [businesses, setBusinesses] = useState<Business[]>([])
   const [deals, setDeals] = useState<Deal[]>([])
+  const [restaurants, setRestaurants] = useState<Business[]>([])
   
   useEffect(() => {
     initializeData()
@@ -71,7 +74,18 @@ export default function LandingPage() {
   }, [])
 
   const { latitude, longitude, locationInfo, osmBusinesses } = useLocation()
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      fetchNearbyRestaurants(latitude, longitude).then(setRestaurants);
+    }
+  }, [latitude, longitude]);
   const [isMapOpen, setIsMapOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   
   // Default center if location is not available (Lafayette High School, Ballwin, MO)
   const defaultCenter: [number, number] = [38.59550, -90.63751]
@@ -86,7 +100,7 @@ export default function LandingPage() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
   // Merge static and OSM businesses for the map display
-  const allBusinesses = [...businesses, ...osmBusinesses].filter(
+  const allBusinesses = [...businesses, ...osmBusinesses, ...restaurants].filter(
     (b, i, self) => i === self.findIndex((t) => t.id === b.id)
   )
 
@@ -198,12 +212,7 @@ export default function LandingPage() {
                              <MapPopup>
                                <div className="p-2 w-[200px]">
                                  <div className="relative h-24 w-full mb-2 rounded-md overflow-hidden">
-                                   <Image 
-                                     src={business.imageUrl || "/placeholder.jpg"} 
-                                     alt={`${business.name} storefront`}
-                                     fill
-                                     className="object-cover"
-                                   />
+                                   <BusinessImage business={business} />
                                  </div>
                                  <h3 className="font-bold text-sm mb-1">{business.name}</h3>
                                  <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{business.description}</p>
@@ -260,29 +269,33 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Featured Grid */}
-      <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-16">
-          <div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-4">Featured <br/> <span className="text-muted-foreground">Businesses</span></h2>
-          </div>
-          <Button variant="outline" className="hidden md:flex rounded-full group">
-            View All <ArrowUpRight className="ml-2 w-4 h-4 group-hover:rotate-45 transition-transform" />
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {businesses.slice(0, 6).map((business: Business, index: number) => (
-            <CardItem key={business.id} business={business} index={index} />
-          ))}
-        </div>
-        
-         <div className="mt-12 flex justify-center md:hidden">
-          <Button variant="outline" className="rounded-full">
-            View All <ArrowUpRight className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
-      </section>
+
+      {/* Featured Restaurants Section */}
+      {isClient && (
+        <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
+          <div className="flex justify-between items-end mb-16">
+            <div>
+              <h2 className="text-4xl md:text-6xl font-bold mb-4">Featured <br/> <span className="text-muted-foreground">Restaurants</span></h2>
+            </div>
+            <Button variant="outline" className="hidden md:flex rounded-full group">
+              View All <ArrowUpRight className="ml-2 w-4 h-4 group-hover:rotate-45 transition-transform" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {restaurants.slice(0, 6).map((business: Business, index: number) => (
+              <CardItem key={business.id} business={business} index={index} />
+            ))}
+          </div>
+          
+           <div className="mt-12 flex justify-center md:hidden">
+            <Button variant="outline" className="rounded-full">
+              View All <ArrowUpRight className="ml-2 w-4 h-4" />
+            </Button>
+          </div>
+        </section>
+      )}
 
       {/* Deals Section - Horizontal Scroll */}
       <section className="py-32 bg-muted/30 border-t border-border">
@@ -291,7 +304,9 @@ export default function LandingPage() {
          </div>
          
          <div className="overflow-x-auto pb-12 px-4 md:px-8 hide-scrollbar flex gap-6 snap-x snap-mandatory">
-            {deals.map((deal: Deal, index: number) => (
+            {deals.map((deal: Deal, index: number) => {
+              const business = businesses.find(b => b.id === deal.businessId)
+              return (
               <motion.div 
                 key={deal.id}
                 initial={{ opacity: 0, x: 50 }}
@@ -304,7 +319,7 @@ export default function LandingPage() {
                   <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                     {deal.dealType === 'percentage' ? `${deal.discountPercent}% OFF` : 'SPECIAL OFFER'}
                   </div>
-                  <div className="absolute inset-0 bg-muted/50 animate-pulse" />
+                  {business && <BusinessImage business={business} />}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                      <Button className="rounded-full">Claim Deal</Button>
                   </div>
@@ -312,7 +327,7 @@ export default function LandingPage() {
                 <h3 className="text-xl font-bold mb-1">{deal.title}</h3>
                 <p className="text-muted-foreground text-sm">{deal.description}</p>
               </motion.div>
-            ))}
+            )})}
          </div>
       </section>
 
@@ -335,7 +350,22 @@ export default function LandingPage() {
   )
 }
 
+function BusinessImage({ business }: { business: Business }) {
+  const imageUrl = business.imageUrl || "/placeholder.jpg";
+
+  return (
+    <Image 
+      src={imageUrl} 
+      alt={`${business.name} storefront`}
+      fill
+      className="object-cover"
+    />
+  );
+}
+
 function CardItem({ business, index }: { business: Business, index: number }) {
+  const imageUrl = business.imageUrl || "/placeholder.jpg";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -347,7 +377,7 @@ function CardItem({ business, index }: { business: Business, index: number }) {
       <Link href={`/business/${business.id}`}>
         <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-card mb-4 border border-border">
           <Image 
-            src={business.imageUrl || "/placeholder.jpg"} 
+            src={imageUrl} 
             alt={`${business.name} storefront`}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
