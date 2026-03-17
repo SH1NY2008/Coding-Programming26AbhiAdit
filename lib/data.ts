@@ -55,6 +55,10 @@ export interface Business {
   createdAt: string
 }
 
+export interface BusinessWithDistance extends Business {
+  distance: number | null
+}
+
 /**
  * Represents a user review for a business
  */

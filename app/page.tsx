@@ -249,29 +249,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Featured Grid */}
-      <section className="py-32 px-4 md:px-8 max-w-7xl mx-auto">
-        <div className="flex justify-between items-end mb-16">
-          <div>
-            <h2 className="text-4xl md:text-6xl font-bold mb-4">Featured <br/> <span className="text-muted-foreground">Businesses</span></h2>
-          </div>
-          <Button variant="outline" className="hidden md:flex rounded-full group">
-            View All <ArrowUpRight className="ml-2 w-4 h-4 group-hover:rotate-45 transition-transform" />
-          </Button>.
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {businesses.slice(0, 6).map((business: Business, index: number) => (
-            <CardItem key={business.id} business={business} index={index} />
-          ))}
-        </div>
-        
-         <div className="mt-12 flex justify-center md:hidden">
-          <Button variant="outline" className="rounded-full">
-            View All <ArrowUpRight className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
-      </section>
 
       {/* Deals Section - Horizontal Scroll */}
       <section className="py-32 bg-muted/30 border-t border-border">

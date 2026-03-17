@@ -63,6 +63,7 @@ import {
   filterBusinesses,
   CATEGORIES,
   type Business,
+  type BusinessWithDistance,
 } from "@/lib/data"
 import { useLocation } from "@/lib/location-context"
 import { forwardGeocode } from "@/lib/geoapify"
@@ -71,6 +72,7 @@ import { cn } from "@/lib/utils"
 import { Slider } from "@/components/ui/slider"
 import { Marquee } from "@/components/marquee"
 import { motion, AnimatePresence } from "motion/react";
+import { MapView } from "@/components/map-view";
 import { useMounted } from "@/lib/hooks/use-mounted";
 
 /**
@@ -138,7 +140,7 @@ function BrowseContent() {
   const [selectedPriceLevels, setSelectedPriceLevels] = useState<number[]>([])
   const [minRating, setMinRating] = useState<number>(0)
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "distance-asc")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid")
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [dataSource, setDataSource] = useState<"osm" | "mock">("osm")
   const [businesses, setBusinesses] = useState<Business[]>([])
@@ -194,7 +196,7 @@ function BrowseContent() {
   /**
    * Filters and sorts business data from either OSM or mock source
    */
-  const filteredBusinesses = useMemo(() => {
+  const filteredBusinesses: BusinessWithDistance[] = useMemo(() => {
     if (!isMounted) return []
 
     // Choose data source
@@ -209,8 +211,15 @@ function BrowseContent() {
     // Apply search filter
     const validation = validateSearchQuery(searchQuery)
     const sanitizedSearch = validation.isValid ? validation.sanitized?.toLowerCase() : ""
+
+    // Add distance to each business
+    let results: BusinessWithDistance[] = sourceData.map((business) => ({
+      ...business,
+      distance: getDistanceFromUser(business.latitude, business.longitude),
+    }))
     
-    let results = sourceData.filter((business) => {
+    // Apply filters on results with distance
+    results = results.filter((business) => {
       // Search filter
       if (sanitizedSearch) {
         const searchableText = `${business.name} ${business.description} ${business.tags.join(" ")}`.toLowerCase()
@@ -231,12 +240,6 @@ function BrowseContent() {
       
       return true
     })
-    
-    // Add distance to each business
-    results = results.map((business) => ({
-      ...business,
-      distance: getDistanceFromUser(business.latitude, business.longitude),
-    }))
     
     // Sort results
     const [sortField, sortOrder] = sortBy.split("-") as [string, "asc" | "desc"]
@@ -718,6 +721,46 @@ function BrowseContent() {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* View Mode Toggle */}
+              <div className="hidden sm:flex items-center gap-1 bg-neutral-950 border border-white/10 p-1 rounded-xl">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "h-9 w-9 text-neutral-400 hover:text-white",
+                    viewMode === "grid" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "hover:bg-white/5"
+                  )}
+                  aria-label="Grid view"
+                >
+                  <Grid className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => setViewMode("list")}
+                  className={cn(
+                    "h-9 w-9 text-neutral-400 hover:text-white",
+                    viewMode === "list" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "hover:bg-white/5"
+                  )}
+                  aria-label="List view"
+                >
+                  <List className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant={viewMode === "map" ? "default" : "ghost"}
+                  size="icon"
+                  onClick={() => setViewMode("map")}
+                  className={cn(
+                    "h-9 w-9 text-neutral-400 hover:text-white",
+                    viewMode === "map" ? "bg-emerald-600 hover:bg-emerald-500 text-white" : "hover:bg-white/5"
+                  )}
+                  aria-label="Map view"
+                >
+                  <Map className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
 
             {/* Results Grid */}
@@ -743,21 +786,42 @@ function BrowseContent() {
                    </Button>
                  </motion.div>
                ) : (
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                   {filteredBusinesses.map((business, idx) => (
-                     <motion.div
-                       key={business.id}
-                       initial={{ opacity: 0, y: 20 }}
-                       animate={{ opacity: 1, y: 0 }}
-                       transition={{ duration: 0.4, delay: idx * 0.05 }}
-                     >
-                       <BusinessCard 
-                         business={business} 
-                         className="h-full bg-neutral-900 border-white/10 text-white hover:bg-neutral-800/50 hover:border-white/20 hover:shadow-2xl hover:shadow-black/50"
-                       />
-                     </motion.div>
-                   ))}
-                 </div>
+                 <AnimatePresence mode="wait">
+                   <motion.div
+                     key={viewMode}
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: 1 }}
+                     exit={{ opacity: 0 }}
+                     transition={{ duration: 0.3 }}
+                   >
+                     {viewMode === "map" ? (
+                       <MapView businesses={filteredBusinesses} latitude={latitude} longitude={longitude} />
+                     ) : (
+                       <div
+                         className={cn(
+                           "grid gap-8",
+                           viewMode === "grid"
+                             ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                             : "grid-cols-1"
+                         )}
+                       >
+                         {filteredBusinesses.map((business, idx) => (
+                           <motion.div
+                             key={business.id}
+                             initial={{ opacity: 0, y: 20 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             transition={{ duration: 0.4, delay: idx * 0.05 }}
+                           >
+                             <BusinessCard
+                                business={business}
+                                distance={business.distance}
+                              />
+                           </motion.div>
+                         ))}
+                       </div>
+                     )}
+                   </motion.div>
+                 </AnimatePresence>
                )}
             </div>
           </div>

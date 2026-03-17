@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3"
+import { Intro } from "@/components/Intro"
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -28,6 +29,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
         <SmoothScrollProvider>
           <AppProvider>
             <LocationProvider>
+              <Intro />
               <Header />
               <motion.div
                 initial={{ opacity: 0 }}

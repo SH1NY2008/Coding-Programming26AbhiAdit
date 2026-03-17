@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils"
 
 interface BusinessCardProps {
   business: Business
+  distance?: number | null
   onBookmarkChange?: () => void
   className?: string
 }
@@ -55,6 +56,7 @@ interface BusinessCardProps {
  */
 export function BusinessCard({
   business,
+  distance,
   onBookmarkChange,
   className,
 }: BusinessCardProps) {
@@ -201,7 +203,11 @@ export function BusinessCard({
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span className="flex items-center gap-1 line-clamp-1">
               <MapPin className="h-3.5 w-3.5 shrink-0" />
-              {business.city}, {business.state}
+              {distance != null ? (
+                <>{distance.toFixed(1)} mi · {business.city}</>
+              ) : (
+                <>{business.city}, {business.state}</>
+              )}
             </span>
             {renderPriceLevel()}
           </div>
