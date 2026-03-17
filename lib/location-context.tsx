@@ -220,12 +220,11 @@ export function LocationProvider({ children }: LocationProviderProps) {
     }
   }, [])
 
-  // Use IP location or default if geolocation fails after timeout
-  useEffect(() => {
-    // if (!geo.isLoading && geo.error && !manualLocation) {
-    //   fetchIpLocation()
-    // }
-  }, [geo.isLoading, geo.error, manualLocation, fetchIpLocation])
+  // useEffect(() => {{
+  //   if (!geo.isLoading && geo.error && !manualLocation) {{
+  //     fetchIpLocation()
+  //   }}
+  // }}, [geo.isLoading, geo.error, manualLocation, fetchIpLocation])
 
   /**
    * Refreshes user location using browser geolocation
