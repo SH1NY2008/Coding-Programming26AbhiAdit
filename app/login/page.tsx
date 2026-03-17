@@ -10,7 +10,6 @@ import { GalleryVerticalEnd } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3"
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -20,34 +19,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const { executeRecaptcha } = useGoogleReCaptcha()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-
-    if (!executeRecaptcha) {
-      setError("reCAPTCHA not available")
-      return
-    }
-
     try {
-      const token = await executeRecaptcha("login")
-      const response = await fetch("/api/verify-recaptcha", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      })
-
-      const data = await response.json()
-
-      if (!data.success) {
-        setError("reCAPTCHA verification failed")
-        return
-      }
-
       await signInWithEmailAndPassword(auth, email, password)
       router.push("/")
     } catch (error: any) {
@@ -113,13 +89,6 @@ export default function LoginPage() {
                 </Button>
               </div>
             </form>
-            <p className="text-xs text-muted-foreground mt-4">
-              This site is protected by reCAPTCHA and the Google
-              <a href="https://policies.google.com/privacy" className="underline"> Privacy Policy </a>
-              and
-              <a href="https://policies.google.com/terms" className="underline"> Terms of Service </a>
-              apply.
-            </p>
             <p className="text-sm text-muted-foreground mt-4">
               Don't have an account?{" "}
               <Link href="/signup" className="underline">
