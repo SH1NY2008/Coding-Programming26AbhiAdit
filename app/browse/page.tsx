@@ -119,6 +119,7 @@ function BrowseContent() {
     locationInfo,
     locationError,
     isLoadingLocation,
+    isFirstLoad,
     osmBusinesses,
     isLoadingBusinesses,
     businessError,
@@ -148,6 +149,12 @@ function BrowseContent() {
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [geocodeError, setGeocodeError] = useState<string | null>(null)
   const isMounted = useMounted()
+
+  useEffect(() => {
+    if (!isFirstLoad && locationError) {
+      setLocationDialogOpen(true)
+    }
+  }, [isFirstLoad, locationError])
 
   /**
    * Handles manual location submission
@@ -326,6 +333,18 @@ function BrowseContent() {
   // Get subcategories for selected category
   const currentCategory = CATEGORIES.find((c) => c.id === selectedCategory)
   const subcategories = currentCategory?.subcategories || []
+
+  if (isFirstLoad && isLoadingLocation) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div className="text-center text-white">
+          <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-500" />
+          <p className="mt-4 text-lg">Finding your location...</p>
+          <p className="text-sm text-neutral-400">Please grant permission if prompted.</p>
+        </div>
+      </div>
+    )
+  }
 
   /**
    * Filter panel content (shared between desktop and mobile)
@@ -564,45 +583,40 @@ function BrowseContent() {
                         Change
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md bg-neutral-900 border-white/10 text-white">
+                    <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-800 text-white">
                       <DialogHeader>
-                        <DialogTitle className="text-white">Update Location</DialogTitle>
+                        <DialogTitle className="text-emerald-400">Update Location</DialogTitle>
                         <DialogDescription className="text-neutral-400">
-                          Enter a city, zip code, or address to see businesses in that area.
+                          {locationError 
+                            ? "To find businesses near you, please enable location services or manually enter your address."
+                            : "Enter a city, zip code, or address to see businesses in that area."}
                         </DialogDescription>
                       </DialogHeader>
-                      <form onSubmit={handleManualLocationSubmit} className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="location" className="text-neutral-300">Location</Label>
-                          <div className="flex gap-2">
+                      <form onSubmit={handleManualLocationSubmit}>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="location" className="text-right text-neutral-300">
+                              Location
+                            </Label>
                             <Input
                               id="location"
-                              placeholder="e.g. San Francisco, CA"
                               value={locationQuery}
                               onChange={(e) => setLocationQuery(e.target.value)}
-                              disabled={isGeocoding}
-                              className="bg-neutral-950 border-white/10 text-white placeholder:text-neutral-600 focus-visible:ring-emerald-500"
+                              placeholder='e.g., "New York, NY" or a full address'
+                              className="col-span-3 bg-neutral-800 border-neutral-700 focus:ring-emerald-500"
                             />
-                            <Button type="submit" disabled={isGeocoding || !locationQuery.trim()} className="bg-emerald-600 hover:bg-emerald-500 text-white">
-                              {isGeocoding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update"}
-                            </Button>
                           </div>
-                          {geocodeError && (
-                            <p className="text-sm text-red-400">{geocodeError}</p>
-                          )}
+                          {geocodeError && <p className="col-span-4 text-center text-red-500 text-sm">{geocodeError}</p>}
                         </div>
+                        <DialogFooter>
+                          <Button type="button" variant="outline" onClick={handleUseCurrentLocation} className="border-emerald-500 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-400">
+                            {isLoadingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Navigation className="mr-2 h-4 w-4" />} Use Current Location
+                          </Button>
+                          <Button type="submit" disabled={isGeocoding || !locationQuery.trim()} className="bg-emerald-600 hover:bg-emerald-500">
+                            {isGeocoding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />} Find
+                          </Button>
+                        </DialogFooter>
                       </form>
-                      <DialogFooter className="sm:justify-start">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          onClick={handleUseCurrentLocation}
-                          className="w-full sm:w-auto bg-white/10 text-white hover:bg-white/20"
-                        >
-                          <Map className="mr-2 h-4 w-4" />
-                          Use Current Location
-                        </Button>
-                      </DialogFooter>
                     </DialogContent>
                   </Dialog>
                 )}

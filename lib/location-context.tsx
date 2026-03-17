@@ -46,6 +46,7 @@ interface LocationContextValue {
   locationInfo: LocationInfo | null
   locationError: string | null
   isLoadingLocation: boolean
+  isFirstLoad: boolean
   
   // Business state
   osmBusinesses: Business[]
@@ -88,6 +89,8 @@ export function LocationProvider({ children }: LocationProviderProps) {
   const [searchRadius, setSearchRadius] = useState(2000) // meters
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null)
   
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
+
   // Effective coordinates (manual or from geolocation)
   const effectiveLat = manualLocation?.lat ?? geo.latitude
   const effectiveLon = manualLocation?.lon ?? geo.longitude
@@ -122,6 +125,21 @@ export function LocationProvider({ children }: LocationProviderProps) {
   }, [])
 
   /**
+   * Main effect for handling location updates
+   */
+  useEffect(() => {
+    if (manualLocation) {
+      fetchLocationInfo(manualLocation.lat, manualLocation.lon)
+      setIsFirstLoad(false)
+    } else if (geo.latitude && geo.longitude) {
+      fetchLocationInfo(geo.latitude, geo.longitude)
+      setIsFirstLoad(false)
+    } else if (geo.error) {
+      setIsFirstLoad(false)
+    }
+  }, [geo.latitude, geo.longitude, geo.error, manualLocation, fetchLocationInfo])
+
+  /**
    * Fetches nearby businesses from Geoapify (with OSM fallback)
    */
   const fetchBusinesses = useCallback(async (lat: number, lon: number, radius: number) => {
@@ -133,10 +151,12 @@ export function LocationProvider({ children }: LocationProviderProps) {
       try {
         const businesses = await fetchGeoapifyBusinesses(lat, lon, radius)
         setOsmBusinesses(businesses)
-      } catch (geoapifyError) {
+      } catch (geoapifyError) {// Fallback to Lafayette High School, Ballwin, MO for demo purposes
+const effectiveLat = manualLocation?.lat ?? geo.latitude ?? 38.59550
+const effectiveLon = manualLocation?.lon ?? geo.longitude ?? -90.63751
         console.warn("Geoapify failed, falling back to OSM:", geoapifyError)
         // Fallback to OSM
-        const businesses = await fetchOSMBusinesses(lat, lon, radius)
+        const businesses = await fetchOSMBusinesses(effectiveLat, effectiveLon, radius)
         setOsmBusinesses(businesses)
       }
     } catch (error) {
@@ -172,12 +192,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
     return calculateDistance(effectiveLat, effectiveLon, lat, lon)
   }, [effectiveLat, effectiveLon])
 
-  // Fetch location info when coordinates change
-  useEffect(() => {
-    if (effectiveLat !== null && effectiveLon !== null) {
-      fetchLocationInfo(effectiveLat, effectiveLon)
-    }
-  }, [effectiveLat, effectiveLon, fetchLocationInfo])
+
 
   // Fetch businesses when location or radius changes
   useEffect(() => {
@@ -231,6 +246,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
         locationInfo,
         locationError: manualLocation ? null : geo.error,
         isLoadingLocation: geo.isLoading && !manualLocation,
+        isFirstLoad,
         
         osmBusinesses,
         isLoadingBusinesses,
