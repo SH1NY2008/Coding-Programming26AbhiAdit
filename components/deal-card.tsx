@@ -40,6 +40,7 @@ export function DealCard({ deal, business: providedBusiness, showBusiness = true
   const [isHovered, setIsHovered] = useState(false);
 
   const business = providedBusiness || (showBusiness ? getBusinessById(deal.businessId) : null);
+  const availabilityPercent = (deal.coupons_avail && deal.coupons_left) ? (deal.coupons_left / deal.coupons_avail) * 100 : null;
   const redemptionPercent = (deal.redemptions / deal.maxRedemptions) * 100;
 
   useEffect(() => {
@@ -142,17 +143,19 @@ export function DealCard({ deal, business: providedBusiness, showBusiness = true
         </p>
 
         {/* Progress */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs text-neutral-500 uppercase tracking-wider font-medium">
-            <span>Availability</span>
-            <span>{Math.max(0, deal.maxRedemptions - deal.redemptions)} left</span>
+        {availabilityPercent !== null && (
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs text-neutral-500 uppercase tracking-wider font-medium">
+              <span>Availability</span>
+              <span>{deal.coupons_left} left</span>
+            </div>
+            <Progress 
+              value={availabilityPercent} 
+              className="h-1 bg-neutral-800" 
+              indicatorClassName={isExpired ? "bg-red-500" : "bg-emerald-500"} 
+            />
           </div>
-          <Progress 
-            value={redemptionPercent} 
-            className="h-1 bg-neutral-800" 
-            indicatorClassName={isExpired ? "bg-red-500" : "bg-emerald-500"} 
-          />
-        </div>
+        )}
       </div>
 
       {/* Footer / Action Area */}

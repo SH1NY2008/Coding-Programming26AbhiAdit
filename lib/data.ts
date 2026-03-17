@@ -101,6 +101,8 @@ export interface Deal {
   dealType: 'percentage' | 'bogo' | 'fixed' | 'freebie'
   redemptions: number
   maxRedemptions: number
+  coupons_left?: number
+  coupons_avail?: number
   createdAt: string
 }
 

@@ -44,6 +44,8 @@ export function mapDiscountToDealAndBusiness(discount: any): { deal: Deal; busin
     dealType: dealType,
     redemptions: discount.coupons_avail - discount.coupons_left,
     maxRedemptions: discount.coupons_avail,
+    coupons_left: discount.coupons_left,
+    coupons_avail: discount.coupons_avail,
     createdAt: new Date().toISOString(),
   };
 

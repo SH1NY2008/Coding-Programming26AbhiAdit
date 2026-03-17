@@ -21,6 +21,8 @@ export interface CouponApiOffer {
   status: string;
   primary_location: string;
   rating: number;
+  coupons_left?: number;
+  coupons_avail?: number;
 }
 
 export async function fetchCoupons(lat?: number, lon?: number): Promise<CouponApiOffer[]> {
@@ -118,6 +120,8 @@ export function mapCouponToDealAndBusiness(coupon: CouponApiOffer): { deal: Deal
     dealType: dealType,
     redemptions: 0,
     maxRedemptions: 1000,
+    coupons_left: coupon.coupons_left,
+    coupons_avail: coupon.coupons_avail,
     createdAt: new Date().toISOString()
   };
 
