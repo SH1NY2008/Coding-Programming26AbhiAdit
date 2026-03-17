@@ -77,14 +77,6 @@ export default function LandingPage() {
   const defaultCenter: [number, number] = [38.59550, -90.63751]
   const mapCenter: [number, number] = latitude && longitude ? [latitude, longitude] : defaultCenter
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-
   // Merge static and OSM businesses for the map display
   const allBusinesses = [...businesses, ...osmBusinesses].filter(
     (b, i, self) => i === self.findIndex((t) => t.id === b.id)
@@ -94,10 +86,7 @@ export default function LandingPage() {
     <div ref={containerRef} className="relative min-h-screen overflow-hidden">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center pt-20">
-        <motion.div 
-          style={{ y, opacity }}
-          className="z-10 text-center max-w-5xl mx-auto"
-        >
+        <div className="z-10 text-center max-w-5xl mx-auto">
           <motion.h1 
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -222,7 +211,7 @@ export default function LandingPage() {
               </DialogContent>
             </Dialog>
           </motion.div>
-        </motion.div>
+        </div>
 
         {/* Background Elements */}
         <div className="absolute inset-0 z-0 opacity-20 dark:opacity-30 pointer-events-none">
@@ -268,7 +257,7 @@ export default function LandingPage() {
           </div>
           <Button variant="outline" className="hidden md:flex rounded-full group">
             View All <ArrowUpRight className="ml-2 w-4 h-4 group-hover:rotate-45 transition-transform" />
-          </Button>
+          </Button>.
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,9 +283,9 @@ export default function LandingPage() {
             {deals.map((deal: Deal, index: number) => (
               <motion.div 
                 key={deal.id}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ ease: "easeOut", duration: 0.22, delay: index * 0.1 }}
                 viewport={{ once: true }}
                 className="min-w-[300px] md:min-w-[400px] snap-center"
               >
@@ -338,9 +327,9 @@ export default function LandingPage() {
 function CardItem({ business, index }: { business: Business, index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ ease: "easeOut", duration: 0.22, delay: index * 0.1 }}
       viewport={{ once: true, margin: "-50px" }}
       className="group"
     >
