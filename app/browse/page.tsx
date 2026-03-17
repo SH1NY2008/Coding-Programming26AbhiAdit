@@ -536,90 +536,92 @@ function BrowseContent() {
   )
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-foreground selection:bg-emerald-500/30">
-      <Marquee text="DISCOVER LOCAL • SUPPORT SMALL BUSINESS • FIND GEMS • EXPLORE • CONNECT •" />
-      
-      <div className="container mx-auto px-4 pt-16 pb-24">
-        {/* Header Section */}
-        <section className="mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col md:flex-row justify-between items-end gap-8"
-          >
-            <div>
-              <h1 className="text-7xl md:text-9xl font-bold tracking-tighter text-white mb-6">
-                BROWSE
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-lg text-neutral-400">
-                <MapPin className="h-5 w-5 text-emerald-500" />
-                {isLoadingLocation ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Locating...
-                  </span>
-                ) : locationInfo ? (
-                  <span>
-                    Near <strong className="text-white font-semibold">{locationInfo.city}{locationInfo.state && `, ${locationInfo.state}`}</strong>
-                  </span>
-                ) : locationError ? (
-                  <span className="text-red-400">
-                    {locationError}
-                  </span>
+    <>
+      <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Location not available</DialogTitle>
+            <DialogDescription>
+              We couldn't determine your location. Please enable location services in your browser or enter your address manually.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleManualLocationSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Input
+                  id="location"
+                  placeholder="Enter your city, state, or address"
+                  value={locationQuery}
+                  onChange={(e) => setLocationQuery(e.target.value)}
+                  className="col-span-4"
+                />
+              </div>
+              {geocodeError && <p className="text-sm text-red-500">{geocodeError}</p>}
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleUseCurrentLocation}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+              <Button type="submit" disabled={isGeocoding}>
+                {isGeocoding ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <span>Discover local gems</span>
+                  <MapPin className="mr-2 h-4 w-4" />
                 )}
-                {isMounted && (
-                  <Dialog open={locationDialogOpen} onOpenChange={setLocationDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-3 text-sm font-medium text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
-                        aria-label="Update location"
-                      >
-                        <Navigation className="h-3 w-3 mr-1" />
-                        Change
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] bg-neutral-900 border-neutral-800 text-white">
-                      <DialogHeader>
-                        <DialogTitle className="text-emerald-400">Update Location</DialogTitle>
-                        <DialogDescription className="text-neutral-400">
-                          {locationError 
-                            ? "To find businesses near you, please enable location services or manually enter your address."
-                            : "Enter a city, zip code, or address to see businesses in that area."}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form onSubmit={handleManualLocationSubmit}>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="location" className="text-right text-neutral-300">
-                              Location
-                            </Label>
-                            <Input
-                              id="location"
-                              value={locationQuery}
-                              onChange={(e) => setLocationQuery(e.target.value)}
-                              placeholder='e.g., "New York, NY" or a full address'
-                              className="col-span-3 bg-neutral-800 border-neutral-700 focus:ring-emerald-500"
-                            />
-                          </div>
-                          {geocodeError && <p className="col-span-4 text-center text-red-500 text-sm">{geocodeError}</p>}
-                        </div>
-                        <DialogFooter>
-                          <Button type="button" variant="outline" onClick={handleUseCurrentLocation} className="border-emerald-500 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-400">
-                            {isLoadingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Navigation className="mr-2 h-4 w-4" />} Use Current Location
-                          </Button>
-                          <Button type="submit" disabled={isGeocoding || !locationQuery.trim()} className="bg-emerald-600 hover:bg-emerald-500">
-                            {isGeocoding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />} Find
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                )}
+                Use this location
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <div className="min-h-screen bg-neutral-950 text-foreground selection:bg-emerald-500/30">
+        <Marquee text="DISCOVER LOCAL • SUPPORT SMALL BUSINESS • FIND GEMS • EXPLORE • CONNECT •" />
+
+        <div className="container mx-auto px-4 pt-16 pb-24">
+          {/* Header Section */}
+          <section className="mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col md:flex-row justify-between items-end gap-8"
+            >
+              <div>
+                <h1 className="text-7xl md:text-9xl font-bold tracking-tighter text-white mb-6">
+                  BROWSE
+                </h1>
+                <div className="flex flex-wrap items-center gap-3 text-lg text-neutral-400">
+                  <MapPin className="h-5 w-5 text-emerald-500" />
+                  {isLoadingLocation ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Locating...
+                    </span>
+                  ) : locationInfo ? (
+                    <span>
+                      Near <strong className="text-white font-semibold">{locationInfo.city}{locationInfo.state && `, ${locationInfo.state}`}</strong>
+                    </span>
+                  ) : locationError ? (
+                    <span className="text-red-400">
+                      {locationError}
+                    </span>
+                  ) : (
+                    <span>Discover local gems</span>
+                  )}
+                  {isMounted && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLocationDialogOpen(true)}
+                      className="h-8 px-3 text-sm font-medium text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                      aria-label="Update location"
+                    >
+                      <Navigation className="h-3 w-3 mr-1" />
+                      Change
+                    </Button>
+                  )}
               </div>
             </div>
             
@@ -762,6 +764,7 @@ function BrowseContent() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 
