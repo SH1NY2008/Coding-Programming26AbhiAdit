@@ -14,22 +14,30 @@ import { Label } from "@/components/ui/label"
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 
+import ReCAPTCHA from "react-google-recaptcha";
+import { RECAPTCHA_SITE_KEY } from "@/lib/recaptcha";
+
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      router.push("/")
-    } catch (error: any) {
-      setError(error.message)
+    e.preventDefault();
+    setError(null);
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA.");
+      return;
     }
-  }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -67,7 +75,7 @@ export default function LoginPage() {
                     type="email"
                     placeholder="m@example.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -77,13 +85,23 @@ export default function LoginPage() {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button type="submit" className="w-full mt-2">Login</Button>
-                <Button variant="outline" className="w-full mt-2" onClick={handleGoogleSignIn}>
+                <ReCAPTCHA
+                  sitekey={RECAPTCHA_SITE_KEY!}
+                  onChange={setRecaptchaToken}
+                />
+                <Button type="submit" className="w-full mt-2">
+                  Login
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={handleGoogleSignIn}
+                >
                   <FcGoogle className="mr-2 h-4 w-4" />
                   Sign in with Google
                 </Button>
@@ -106,5 +124,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

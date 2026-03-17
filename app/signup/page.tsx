@@ -4,29 +4,49 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { FcGoogle } from "react-icons/fc";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase"
 import { GalleryVerticalEnd } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+import ReCAPTCHA from "react-google-recaptcha";
+import { RECAPTCHA_SITE_KEY } from "@/lib/recaptcha";
+
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      router.push("/")
-    } catch (error: any) {
-      setError(error.message)
+    e.preventDefault();
+    setError(null);
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA.");
+      return;
     }
-  }
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      router.push("/");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div className="grid h-screen w-full lg:grid-cols-2 overflow-hidden">
@@ -54,7 +74,7 @@ export default function SignUpPage() {
                     type="email"
                     placeholder="m@example.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -64,12 +84,26 @@ export default function SignUpPage() {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-                <Button type="submit" className="w-full mt-2">Sign Up</Button>
+                <ReCAPTCHA
+                  sitekey={RECAPTCHA_SITE_KEY!}
+                  onChange={setRecaptchaToken}
+                />
+                <Button type="submit" className="w-full mt-2">
+                  Sign Up
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={handleGoogleSignUp}
+                >
+                  <FcGoogle className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </Button>
               </div>
             </form>
             <p className="text-sm text-muted-foreground mt-4">
@@ -89,5 +123,5 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

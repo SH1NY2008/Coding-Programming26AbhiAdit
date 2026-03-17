@@ -287,7 +287,7 @@ export default function LandingPage() {
       {/* Deals Section - Horizontal Scroll */}
       <section className="py-32 bg-muted/30 border-t border-border">
          <div className="px-4 md:px-8 max-w-7xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold">Hot <span className="text-muted-foreground">Deals</span></h2>
+
          </div>
          
          <div className="overflow-x-auto pb-12 px-4 md:px-8 hide-scrollbar flex gap-6 snap-x snap-mandatory">
