@@ -89,9 +89,8 @@ export function LocationProvider({ children }: LocationProviderProps) {
   const [manualLocation, setManualLocation] = useState<{ lat: number; lon: number } | null>(null)
   
   // Effective coordinates (manual or from geolocation)
-  // Fallback to Lafayette High School, Ballwin, MO for demo purposes
-  const effectiveLat = manualLocation?.lat ?? geo.latitude ?? 38.59550
-  const effectiveLon = manualLocation?.lon ?? geo.longitude ?? -90.63751
+  const effectiveLat = manualLocation?.lat ?? geo.latitude
+  const effectiveLon = manualLocation?.lon ?? geo.longitude
 
   /**
    * Fetches location name via reverse geocoding
@@ -204,19 +203,16 @@ export function LocationProvider({ children }: LocationProviderProps) {
         throw new Error("IP geolocation failed")
       }
     } catch (error) {
-      console.warn("IP location failed, falling back to default:", error)
-      setManualLocation({
-        lat: DEFAULT_LOCATION.latitude,
-        lon: DEFAULT_LOCATION.longitude,
-      })
+      console.warn("IP location failed, using geolocation as fallback:", error)
+      // Do not set a default location, let it rely on the primary geolocation hook
     }
   }, [])
 
   // Use IP location or default if geolocation fails after timeout
   useEffect(() => {
-    if (!geo.isLoading && geo.error && !manualLocation) {
-      fetchIpLocation()
-    }
+    // if (!geo.isLoading && geo.error && !manualLocation) {
+    //   fetchIpLocation()
+    // }
   }, [geo.isLoading, geo.error, manualLocation, fetchIpLocation])
 
   /**
