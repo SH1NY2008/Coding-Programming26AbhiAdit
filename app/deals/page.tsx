@@ -10,6 +10,7 @@ import { Tag, Clock, Percent, Gift, Ticket, TrendingUp, MapPin, ArrowUpRight } f
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Business, Deal } from "@/lib/data";
 import { fetchCoupons, mapCouponToDealAndBusiness } from "@/lib/coupon-api";
+import { mapDiscountToDealAndBusiness } from "@/lib/discount-api";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ export default function DealsPage() {
   const { latitude, longitude, getDistanceFromUser, locationError, isLoadingLocation, osmBusinesses, setSearchRadius } = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [loadingCoupons, setLoadingCoupons] = useState(false);
+  const [discountApiError, setDiscountApiError] = useState<string | null>(null);
 
   // Fetch coupons from API
   useEffect(() => {
@@ -101,6 +103,39 @@ export default function DealsPage() {
     }
   }, [osmBusinesses, businesses, deals, addBusiness, addDeal]);
 
+  // Fetch discounts from the new API
+  useEffect(() => {
+    const loadDiscounts = async () => {
+      try {
+        setDiscountApiError(null);
+        const response = await fetch('/api/discounts');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const discounts = await response.json();
+        console.log('Discounts from API:', discounts);
+
+        discounts.forEach((discount: any) => {
+          const dealId = `discount-${discount.name.replace(/\s+/g, '-').toLowerCase()}`
+          if (deals.some(d => d.id === dealId)) return;
+
+          const { deal, business } = mapDiscountToDealAndBusiness(discount);
+
+          if (!businesses.some(b => b.id === business.id)) {
+            addBusiness(business);
+          }
+
+          addDeal(deal);
+        });
+      } catch (error: any) {
+        console.error("Failed to load discounts", error);
+        setDiscountApiError(error.message);
+      }
+    };
+
+    loadDiscounts();
+  }, [addBusiness, addDeal]);
+
   const nearbyDeals = useMemo(() => {
     return deals.filter((deal) => {
       const business = businesses.find((b) => b.id === deal.businessId);
@@ -168,6 +203,12 @@ export default function DealsPage() {
                 Curated deals and exclusive offers from the best local businesses. 
                 Unlock savings on food, services, and experiences near you.
               </p>
+              {discountApiError && (
+                <div className="mt-4 text-red-500">
+                  <p>Failed to load discounts from API:</p>
+                  <p>{discountApiError}</p>
+                </div>
+              )}
             </div>
             
             <div className="flex flex-col items-end gap-4">

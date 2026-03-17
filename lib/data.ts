@@ -1,3 +1,6 @@
+
+import { mapDiscountToDealAndBusiness } from './discount-api';
+
 /**
  * Data Layer for Business Boost
  * 
@@ -168,388 +171,208 @@ const STORAGE_KEYS = {
 // ============================================================================
 // Mock Data Generation
 // ============================================================================
+const rawDiscounts = [ 
+     { 
+         "name": "Scraped Deal 1", 
+         "description": "A fantastic deal scraped from the web.", 
+         "shop": "Online Store", 
+         "deal": "50% off", 
+         "coupons_left": 25, 
+         "coupons_avail": 25 
+     }, 
+     { 
+         "name": "Scraped Deal 2", 
+         "description": "Another great deal from another site.", 
+         "shop": "Web Shop", 
+         "deal": "$10 off", 
+         "coupons_left": 10, 
+         "coupons_avail": 10 
+     }, 
+     { 
+         "name": "Weekend Special", 
+         "description": "25% off all weekend.", 
+         "shop": "The Gadget Hub", 
+         "deal": "25% off", 
+         "coupons_left": 150, 
+         "coupons_avail": 150 
+     }, 
+     { 
+         "name": "Student Discount", 
+         "description": "10% off for students.", 
+         "shop": "Bookworm's Paradise", 
+         "deal": "10% off", 
+         "coupons_left": 200, 
+         "coupons_avail": 200 
+     }, 
+     { 
+         "name": "Lunch Combo", 
+         "description": "$5 off any lunch combo.", 
+         "shop": "Quick Bites", 
+         "deal": "$5 off", 
+         "coupons_left": 75, 
+         "coupons_avail": 75 
+     }, 
+     { 
+         "name": "New Customer Offer", 
+         "description": "15% off your first order.", 
+         "shop": "Fresh Blooms", 
+         "deal": "15% off", 
+         "coupons_left": 120, 
+         "coupons_avail": 120 
+     }, 
+     { 
+         "name": "Clearance Sale", 
+         "description": "Up to 70% off on select items.", 
+         "shop": "Fashion Forward", 
+         "deal": "Up to 70% off", 
+         "coupons_left": 300, 
+         "coupons_avail": 300 
+     }, 
+     { 
+         "name": "Two for One Tuesdays", 
+         "description": "Buy one get one free on all main courses.", 
+         "shop": "The Italian Corner", 
+         "deal": "BOGO", 
+         "coupons_left": 40, 
+         "coupons_avail": 40 
+     }, 
+     { 
+         "name": "Morning Coffee Deal", 
+         "description": "Coffee and a pastry for $5.", 
+         "shop": "The Daily Grind", 
+         "deal": "$5 combo", 
+         "coupons_left": 90, 
+         "coupons_avail": 90 
+     }, 
+     { 
+         "name": "Tech Thursday", 
+         "description": "$50 off any laptop.", 
+         "shop": "The Gadget Hub", 
+         "deal": "$50 off", 
+         "coupons_left": 15, 
+         "coupons_avail": 15 
+     }, 
+     { 
+         "name": "Free Shipping", 
+         "description": "Free shipping on all orders over $50.", 
+         "shop": "Online Store", 
+         "deal": "Free Shipping", 
+         "coupons_left": 1000, 
+         "coupons_avail": 1000 
+     }, 
+     { 
+         "name": "Birthday Treat", 
+         "description": "Free dessert on your birthday.", 
+         "shop": "The Sweet Spot", 
+         "deal": "Free Dessert", 
+         "coupons_left": 500, 
+         "coupons_avail": 500 
+     }, 
+     { 
+         "name": "Family Pack", 
+         "description": "Family meal for $30.", 
+         "shop": "Quick Bites", 
+         "deal": "$30 meal", 
+         "coupons_left": 60, 
+         "coupons_avail": 60 
+     }, 
+     { 
+         "name": "Early Access", 
+         "description": "30% off for members.", 
+         "shop": "Fashion Forward", 
+         "deal": "30% off", 
+         "coupons_left": 100, 
+         "coupons_avail": 100 
+     }, 
+     { 
+         "name": "Holiday Special", 
+         "description": "20% off all holiday items.", 
+         "shop": "Fresh Blooms", 
+         "deal": "20% off", 
+         "coupons_left": 80, 
+         "coupons_avail": 80 
+     }, 
+     { 
+         "name": "Book Club Discount", 
+         "description": "15% off for book club members.", 
+         "shop": "Bookworm's Paradise", 
+         "deal": "15% off", 
+         "coupons_left": 110, 
+         "coupons_avail": 110 
+     }, 
+     { 
+         "name": "Happy Hour Drinks", 
+         "description": "50% off all cocktails.", 
+         "shop": "The Corner Bar", 
+         "deal": "50% off", 
+         "coupons_left": 30, 
+         "coupons_avail": 30 
+     }, 
+     { 
+         "name": "Gaming Deal", 
+         "description": "Buy any 2 games, get 1 free.", 
+         "shop": "The Gadget Hub", 
+         "deal": "B2G1 Free", 
+         "coupons_left": 20, 
+         "coupons_avail": 20 
+     }, 
+     { 
+         "name": "Subscription Offer", 
+         "description": "First month free.", 
+         "shop": "Online Store", 
+         "deal": "First Month Free", 
+         "coupons_left": 250, 
+         "coupons_avail": 250 
+     }, 
+     { 
+         "name": "Bulk Discount", 
+         "description": "10% off on orders over $100.", 
+         "shop": "Web Shop", 
+         "deal": "10% off", 
+         "coupons_left": 180, 
+         "coupons_avail": 180 
+     }, 
+     { 
+         "name": "Refer a Friend", 
+         "description": "Get $10 credit for every friend you refer.", 
+         "shop": "Online Store", 
+         "deal": "$10 credit", 
+         "coupons_left": 1000, 
+         "coupons_avail": 1000 
+     }, 
+     { 
+         "name": "Flash Sale", 
+         "description": "40% off for the next hour.", 
+         "shop": "Fashion Forward", 
+         "deal": "40% off", 
+         "coupons_left": 5, 
+         "coupons_avail": 5 
+     } 
+ ];
+
+const processedData = (() => {
+    const deals: Deal[] = [];
+    const businesses: Business[] = [];
+    const businessIds = new Set<string>();
+
+    rawDiscounts.forEach(discount => {
+        const { deal, business } = mapDiscountToDealAndBusiness(discount);
+        deals.push(deal);
+        if (!businessIds.has(business.id)) {
+            businesses.push(business);
+            businessIds.add(business.id);
+        }
+    });
+
+    return { deals, businesses };
+})();
 
 /**
  * Generates realistic mock business data for demonstration
  * Each business includes complete information for all features
  */
 const generateMockBusinesses = (): Business[] => {
-  const businesses: Business[] = [
-    {
-      id: '1',
-      name: 'The Rustic Spoon',
-      description: 'Farm-to-table dining featuring locally sourced ingredients and seasonal menus. Our chefs create innovative dishes that celebrate the flavors of our community.',
-      category: 'food',
-      subcategory: 'Restaurants',
-      address: '123 Main Street',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62701',
-      phone: '(555) 123-4567',
-      email: 'hello@rusticspoon.com',
-      website: 'https://rusticspoon.com',
-      imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '11:00', close: '21:00' },
-        tuesday: { open: '11:00', close: '21:00' },
-        wednesday: { open: '11:00', close: '21:00' },
-        thursday: { open: '11:00', close: '22:00' },
-        friday: { open: '11:00', close: '23:00' },
-        saturday: { open: '10:00', close: '23:00' },
-        sunday: { open: '10:00', close: '20:00' }
-      },
-      priceLevel: 3,
-      averageRating: 4.7,
-      totalReviews: 234,
-      latitude: 39.7817,
-      longitude: -89.6501,
-      tags: ['Farm-to-table', 'Date Night', 'Outdoor Seating'],
-      createdAt: '2024-01-15T10:00:00Z'
-    },
-    {
-      id: '2',
-      name: 'Bean & Brew Coffee House',
-      description: 'Artisan coffee roasted in-house with cozy atmosphere perfect for studying or catching up with friends. We also serve fresh pastries daily.',
-      category: 'food',
-      subcategory: 'Cafes',
-      address: '456 Oak Avenue',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62702',
-      phone: '(555) 234-5678',
-      email: 'info@beanandbrew.com',
-      website: 'https://beanandbrew.com',
-      imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '06:00', close: '20:00' },
-        tuesday: { open: '06:00', close: '20:00' },
-        wednesday: { open: '06:00', close: '20:00' },
-        thursday: { open: '06:00', close: '20:00' },
-        friday: { open: '06:00', close: '21:00' },
-        saturday: { open: '07:00', close: '21:00' },
-        sunday: { open: '07:00', close: '18:00' }
-      },
-      priceLevel: 2,
-      averageRating: 4.8,
-      totalReviews: 512,
-      latitude: 39.7834,
-      longitude: -89.6545,
-      tags: ['WiFi', 'Study Spot', 'Pet Friendly'],
-      createdAt: '2024-02-20T10:00:00Z'
-    },
-    {
-      id: '3',
-      name: 'Sweet Delights Bakery',
-      description: 'Family-owned bakery specializing in custom cakes, fresh bread, and European pastries made from scratch every morning.',
-      category: 'food',
-      subcategory: 'Bakeries',
-      address: '789 Maple Drive',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62703',
-      phone: '(555) 345-6789',
-      email: 'orders@sweetdelights.com',
-      website: 'https://sweetdelights.com',
-      imageUrl: 'https://images.unsplash.com/photo-1517433670267-30f41c4f7df9?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '06:00', close: '18:00' },
-        tuesday: { open: '06:00', close: '18:00' },
-        wednesday: { open: '06:00', close: '18:00' },
-        thursday: { open: '06:00', close: '18:00' },
-        friday: { open: '06:00', close: '19:00' },
-        saturday: { open: '07:00', close: '17:00' },
-        sunday: null
-      },
-      priceLevel: 2,
-      averageRating: 4.9,
-      totalReviews: 389,
-      latitude: 39.7789,
-      longitude: -89.6478,
-      tags: ['Custom Cakes', 'Gluten-Free Options', 'Wedding Cakes'],
-      createdAt: '2024-01-05T10:00:00Z'
-    },
-    {
-      id: '4',
-      name: 'Tech Haven Electronics',
-      description: 'Your local destination for the latest gadgets, computer repairs, and tech support. We offer personalized service that big box stores cannot match.',
-      category: 'retail',
-      subcategory: 'Electronics',
-      address: '321 Technology Lane',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62704',
-      phone: '(555) 456-7890',
-      email: 'support@techhaven.com',
-      website: 'https://techhaven.com',
-      imageUrl: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '09:00', close: '19:00' },
-        tuesday: { open: '09:00', close: '19:00' },
-        wednesday: { open: '09:00', close: '19:00' },
-        thursday: { open: '09:00', close: '19:00' },
-        friday: { open: '09:00', close: '20:00' },
-        saturday: { open: '10:00', close: '18:00' },
-        sunday: { open: '12:00', close: '17:00' }
-      },
-      priceLevel: 3,
-      averageRating: 4.5,
-      totalReviews: 156,
-      latitude: 39.7856,
-      longitude: -89.6612,
-      tags: ['Repairs', 'Custom Builds', 'Trade-Ins'],
-      createdAt: '2024-03-10T10:00:00Z'
-    },
-    {
-      id: '5',
-      name: 'Page Turner Books',
-      description: 'Independent bookstore with curated selections, rare finds, and regular author events. Supporting local readers since 1985.',
-      category: 'retail',
-      subcategory: 'Books',
-      address: '567 Library Street',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62701',
-      phone: '(555) 567-8901',
-      email: 'hello@pageturnerbooks.com',
-      website: 'https://pageturnerbooks.com',
-      imageUrl: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '10:00', close: '18:00' },
-        tuesday: { open: '10:00', close: '18:00' },
-        wednesday: { open: '10:00', close: '18:00' },
-        thursday: { open: '10:00', close: '20:00' },
-        friday: { open: '10:00', close: '20:00' },
-        saturday: { open: '09:00', close: '19:00' },
-        sunday: { open: '11:00', close: '17:00' }
-      },
-      priceLevel: 2,
-      averageRating: 4.9,
-      totalReviews: 278,
-      latitude: 39.7823,
-      longitude: -89.6489,
-      tags: ['Author Events', 'Kids Section', 'Book Club'],
-      createdAt: '2024-01-20T10:00:00Z'
-    },
-    {
-      id: '6',
-      name: 'Bloom Boutique',
-      description: 'Trendy clothing and accessories featuring local designers and sustainable fashion. Find your unique style with our personalized styling services.',
-      category: 'retail',
-      subcategory: 'Clothing',
-      address: '890 Fashion Ave',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62702',
-      phone: '(555) 678-9012',
-      email: 'style@bloomboutique.com',
-      website: 'https://bloomboutique.com',
-      imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '10:00', close: '19:00' },
-        tuesday: { open: '10:00', close: '19:00' },
-        wednesday: { open: '10:00', close: '19:00' },
-        thursday: { open: '10:00', close: '20:00' },
-        friday: { open: '10:00', close: '20:00' },
-        saturday: { open: '10:00', close: '18:00' },
-        sunday: { open: '12:00', close: '17:00' }
-      },
-      priceLevel: 3,
-      averageRating: 4.6,
-      totalReviews: 198,
-      latitude: 39.7801,
-      longitude: -89.6534,
-      tags: ['Sustainable', 'Local Designers', 'Personal Styling'],
-      createdAt: '2024-02-15T10:00:00Z'
-    },
-    {
-      id: '7',
-      name: 'Wellness Center & Spa',
-      description: 'Full-service spa offering massage therapy, facials, and holistic wellness treatments. Escape the everyday and find your inner peace.',
-      category: 'services',
-      subcategory: 'Beauty & Spa',
-      address: '432 Serenity Lane',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62703',
-      phone: '(555) 789-0123',
-      email: 'relax@wellnessspa.com',
-      website: 'https://wellnessspa.com',
-      imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '09:00', close: '20:00' },
-        tuesday: { open: '09:00', close: '20:00' },
-        wednesday: { open: '09:00', close: '20:00' },
-        thursday: { open: '09:00', close: '21:00' },
-        friday: { open: '09:00', close: '21:00' },
-        saturday: { open: '08:00', close: '19:00' },
-        sunday: { open: '10:00', close: '18:00' }
-      },
-      priceLevel: 4,
-      averageRating: 4.8,
-      totalReviews: 445,
-      latitude: 39.7767,
-      longitude: -89.6556,
-      tags: ['Massage', 'Facials', 'Couples Packages'],
-      createdAt: '2024-01-25T10:00:00Z'
-    },
-    {
-      id: '8',
-      name: 'Quick Fix Auto Care',
-      description: 'Honest, reliable auto repair with transparent pricing. From oil changes to engine rebuilds, we treat every car like our own.',
-      category: 'services',
-      subcategory: 'Automotive',
-      address: '765 Motor Way',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62704',
-      phone: '(555) 890-1234',
-      email: 'service@quickfixauto.com',
-      website: 'https://quickfixauto.com',
-      imageUrl: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '07:00', close: '18:00' },
-        tuesday: { open: '07:00', close: '18:00' },
-        wednesday: { open: '07:00', close: '18:00' },
-        thursday: { open: '07:00', close: '18:00' },
-        friday: { open: '07:00', close: '18:00' },
-        saturday: { open: '08:00', close: '14:00' },
-        sunday: null
-      },
-      priceLevel: 2,
-      averageRating: 4.7,
-      totalReviews: 321,
-      latitude: 39.7889,
-      longitude: -89.6623,
-      tags: ['Free Estimates', 'Loaner Cars', 'Same Day Service'],
-      createdAt: '2024-02-05T10:00:00Z'
-    },
-    {
-      id: '9',
-      name: 'Harmony Music Studio',
-      description: 'Music lessons for all ages and skill levels. Learn piano, guitar, violin, drums, and voice from experienced instructors in a supportive environment.',
-      category: 'education',
-      subcategory: 'Music Lessons',
-      address: '234 Melody Court',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62701',
-      phone: '(555) 901-2345',
-      email: 'lessons@harmonymusic.com',
-      website: 'https://harmonymusic.com',
-      imageUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '14:00', close: '21:00' },
-        tuesday: { open: '14:00', close: '21:00' },
-        wednesday: { open: '14:00', close: '21:00' },
-        thursday: { open: '14:00', close: '21:00' },
-        friday: { open: '14:00', close: '20:00' },
-        saturday: { open: '09:00', close: '17:00' },
-        sunday: null
-      },
-      priceLevel: 2,
-      averageRating: 4.9,
-      totalReviews: 167,
-      latitude: 39.7812,
-      longitude: -89.6467,
-      tags: ['All Ages', 'Recitals', 'Group Lessons'],
-      createdAt: '2024-03-01T10:00:00Z'
-    },
-    {
-      id: '10',
-      name: 'FitLife Gym & Training',
-      description: 'State-of-the-art fitness facility with personal training, group classes, and nutrition coaching. Your journey to better health starts here.',
-      category: 'entertainment',
-      subcategory: 'Fitness',
-      address: '678 Health Blvd',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62702',
-      phone: '(555) 012-3456',
-      email: 'info@fitlifegym.com',
-      website: 'https://fitlifegym.com',
-      imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '05:00', close: '23:00' },
-        tuesday: { open: '05:00', close: '23:00' },
-        wednesday: { open: '05:00', close: '23:00' },
-        thursday: { open: '05:00', close: '23:00' },
-        friday: { open: '05:00', close: '22:00' },
-        saturday: { open: '06:00', close: '20:00' },
-        sunday: { open: '07:00', close: '19:00' }
-      },
-      priceLevel: 3,
-      averageRating: 4.6,
-      totalReviews: 523,
-      latitude: 39.7845,
-      longitude: -89.6578,
-      tags: ['Personal Training', '24/7 Access', 'Group Classes'],
-      createdAt: '2024-01-10T10:00:00Z'
-    },
-    {
-      id: '11',
-      name: 'Green Thumb Garden Center',
-      description: 'Everything for your garden: plants, tools, soil, and expert advice. We help both beginners and experienced gardeners create beautiful outdoor spaces.',
-      category: 'retail',
-      subcategory: 'Home Goods',
-      address: '999 Garden Path',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62703',
-      phone: '(555) 123-9876',
-      email: 'grow@greenthumb.com',
-      website: 'https://greenthumb.com',
-      imageUrl: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '08:00', close: '18:00' },
-        tuesday: { open: '08:00', close: '18:00' },
-        wednesday: { open: '08:00', close: '18:00' },
-        thursday: { open: '08:00', close: '18:00' },
-        friday: { open: '08:00', close: '18:00' },
-        saturday: { open: '08:00', close: '17:00' },
-        sunday: { open: '10:00', close: '16:00' }
-      },
-      priceLevel: 2,
-      averageRating: 4.8,
-      totalReviews: 289,
-      latitude: 39.7756,
-      longitude: -89.6501,
-      tags: ['Native Plants', 'Workshops', 'Delivery'],
-      createdAt: '2024-02-28T10:00:00Z'
-    },
-    {
-      id: '12',
-      name: 'Bright Minds Tutoring',
-      description: 'Personalized tutoring for K-12 students in all subjects. Our certified teachers help students build confidence and achieve academic success.',
-      category: 'education',
-      subcategory: 'Tutoring',
-      address: '456 Scholar Way',
-      city: 'Springfield',
-      state: 'IL',
-      zipCode: '62704',
-      phone: '(555) 234-8765',
-      email: 'learn@brightminds.com',
-      website: 'https://brightminds.com',
-      imageUrl: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=600&fit=crop',
-      hours: {
-        monday: { open: '15:00', close: '20:00' },
-        tuesday: { open: '15:00', close: '20:00' },
-        wednesday: { open: '15:00', close: '20:00' },
-        thursday: { open: '15:00', close: '20:00' },
-        friday: { open: '15:00', close: '19:00' },
-        saturday: { open: '09:00', close: '15:00' },
-        sunday: null
-      },
-      priceLevel: 3,
-      averageRating: 4.9,
-      totalReviews: 178,
-      latitude: 39.7878,
-      longitude: -89.6589,
-      tags: ['SAT Prep', 'All Subjects', 'Online Options'],
-      createdAt: '2024-03-05T10:00:00Z'
-    }
-  ]
-  
-  return businesses
+  return processedData.businesses;
 }
 
 /**
@@ -700,143 +523,7 @@ const generateMockReviews = (): Review[] => {
  * Creates realistic deal data with various discount types
  */
 const generateMockDeals = (): Deal[] => {
-  const now = new Date()
-  const deals: Deal[] = [
-    {
-      id: 'd1',
-      businessId: '1',
-      title: 'Weeknight Special',
-      description: 'Enjoy 20% off your entire bill on Monday through Wednesday evenings',
-      discountPercent: 20,
-      code: 'WEEKNIGHT20',
-      termsAndConditions: 'Valid Monday-Wednesday after 5pm. Cannot be combined with other offers. Dine-in only. Excludes alcohol and gratuity.',
-      expiresAt: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      dealType: 'percentage',
-      redemptions: 45,
-      maxRedemptions: 100,
-      createdAt: '2024-11-01T10:00:00Z'
-    },
-    {
-      id: 'd2',
-      businessId: '2',
-      title: 'Morning Boost Bundle',
-      description: 'Get a free pastry with any large coffee purchase before 9am',
-      discountPercent: 0,
-      originalPrice: 8.50,
-      dealPrice: 5.50,
-      code: 'EARLYBIRD',
-      termsAndConditions: 'Valid before 9am only. One per customer per day. While supplies last.',
-      expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      dealType: 'freebie',
-      redemptions: 234,
-      maxRedemptions: 500,
-      createdAt: '2024-11-01T10:00:00Z'
-    },
-    {
-      id: 'd3',
-      businessId: '3',
-      title: 'Birthday Cake Special',
-      description: 'Order a custom birthday cake and get 15% off plus free delivery',
-      discountPercent: 15,
-      code: 'BIRTHDAY15',
-      termsAndConditions: 'Minimum order $50. Free delivery within 10 miles. Order at least 48 hours in advance.',
-      expiresAt: new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      dealType: 'percentage',
-      redemptions: 28,
-      maxRedemptions: 100,
-      createdAt: '2024-10-15T10:00:00Z'
-    },
-    {
-      id: 'd4',
-      businessId: '4',
-      title: 'Student Tech Discount',
-      description: '10% off all repairs with valid student ID',
-      discountPercent: 10,
-      code: 'STUDENT10',
-      termsAndConditions: 'Must present valid student ID at time of service. Cannot be combined with other offers.',
-      expiresAt: new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: '2024-09-01T10:00:00Z',
-      isActive: true,
-      dealType: 'percentage',
-      redemptions: 67,
-      maxRedemptions: 200,
-      createdAt: '2024-09-01T10:00:00Z'
-    },
-    {
-      id: 'd5',
-      businessId: '5',
-      title: 'Book Club Bundle',
-      description: 'Buy 3 books, get the 4th free (equal or lesser value)',
-      discountPercent: 25,
-      code: 'BOOKCLUB4',
-      termsAndConditions: 'Free book must be equal or lesser value to lowest priced book in purchase. Excludes textbooks and special editions.',
-      expiresAt: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      dealType: 'bogo',
-      redemptions: 156,
-      maxRedemptions: 300,
-      createdAt: '2024-11-01T10:00:00Z'
-    },
-    {
-      id: 'd6',
-      businessId: '7',
-      title: 'First Visit Relaxation',
-      description: '30% off your first spa treatment',
-      discountPercent: 30,
-      code: 'FIRSTVISIT30',
-      termsAndConditions: 'New customers only. One per customer. Cannot be combined with other offers or packages.',
-      expiresAt: new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: '2024-10-20T10:00:00Z',
-      isActive: true,
-      dealType: 'percentage',
-      redemptions: 89,
-      maxRedemptions: 150,
-      createdAt: '2024-10-20T10:00:00Z'
-    },
-    {
-      id: 'd7',
-      businessId: '8',
-      title: 'Oil Change Special',
-      description: 'Synthetic oil change for only $39.99 (regularly $59.99)',
-      discountPercent: 33,
-      originalPrice: 59.99,
-      dealPrice: 39.99,
-      code: 'OIL40',
-      termsAndConditions: 'Includes up to 5 quarts synthetic oil and filter. Additional charges for vehicles requiring more oil.',
-      expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      isActive: true,
-      dealType: 'fixed',
-      redemptions: 112,
-      maxRedemptions: 200,
-      createdAt: '2024-11-01T10:00:00Z'
-    },
-    {
-      id: 'd8',
-      businessId: '10',
-      title: 'New Year Fitness Special',
-      description: 'Join now and get 2 months free with annual membership',
-      discountPercent: 17,
-      code: 'NEWYEAR2FREE',
-      termsAndConditions: 'New members only. Annual membership required. Includes full gym access and group classes.',
-      expiresAt: new Date(now.getTime() + 35 * 24 * 60 * 60 * 1000).toISOString(),
-      validFrom: '2024-12-01T10:00:00Z',
-      isActive: true,
-      dealType: 'freebie',
-      redemptions: 45,
-      maxRedemptions: 100,
-      createdAt: '2024-12-01T10:00:00Z'
-    }
-  ]
-  
-  return deals
+  return processedData.deals;
 }
 
 // ============================================================================
@@ -850,20 +537,16 @@ const generateMockDeals = (): Deal[] => {
 export const initializeData = (): void => {
   if (typeof window === 'undefined') return
   
-  // Initialize businesses if not present
-  if (!localStorage.getItem(STORAGE_KEYS.BUSINESSES)) {
-    localStorage.setItem(STORAGE_KEYS.BUSINESSES, JSON.stringify(generateMockBusinesses()))
-  }
+  // Initialize businesses
+  localStorage.setItem(STORAGE_KEYS.BUSINESSES, JSON.stringify(generateMockBusinesses()))
   
   // Initialize reviews if not present
   if (!localStorage.getItem(STORAGE_KEYS.REVIEWS)) {
     localStorage.setItem(STORAGE_KEYS.REVIEWS, JSON.stringify(generateMockReviews()))
   }
   
-  // Initialize deals if not present
-  if (!localStorage.getItem(STORAGE_KEYS.DEALS)) {
-    localStorage.setItem(STORAGE_KEYS.DEALS, JSON.stringify(generateMockDeals()))
-  }
+  // Initialize deals
+  localStorage.setItem(STORAGE_KEYS.DEALS, JSON.stringify(generateMockDeals()))
   
   // Initialize bookmarks if not present
   if (!localStorage.getItem(STORAGE_KEYS.BOOKMARKS)) {
@@ -1206,38 +889,28 @@ export const removeBookmark = (folderId: string, businessId: string): void => {
 }
 
 /**
- * Checks if a business is bookmarked in any folder
- * @param businessId - The business ID to check
- * @returns Boolean indicating if bookmarked
- */
-export const isBookmarked = (businessId: string): boolean => {
-  const folders = getBookmarkFolders()
-  return folders.some(f => f.businessIds.includes(businessId))
-}
-
-/**
- * Updates the note for a bookmarked business
+ * Adds or updates a note for a bookmarked business
  * @param folderId - The folder ID
  * @param businessId - The business ID
- * @param note - The note text
+ * @param note - The note content
  */
 export const updateBookmarkNote = (folderId: string, businessId: string, note: string): void => {
   const folders = getBookmarkFolders()
   const folderIndex = folders.findIndex(f => f.id === folderId)
-  if (folderIndex !== -1) {
+  if (folderIndex !== -1 && folders[folderIndex].businessIds.includes(businessId)) {
     folders[folderIndex].notes[businessId] = note
     localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(folders))
   }
 }
 
 /**
- * Deletes a bookmark folder
- * @param folderId - The folder ID to delete
+ * Checks if a business is bookmarked in any folder
+ * @param businessId - The business ID to check
+ * @returns True if bookmarked, false otherwise
  */
-export const deleteBookmarkFolder = (folderId: string): void => {
-  if (folderId === 'default') return // Prevent deleting default folder
-  const folders = getBookmarkFolders().filter(f => f.id !== folderId)
-  localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(folders))
+export const isBookmarked = (businessId: string): boolean => {
+  const folders = getBookmarkFolders()
+  return folders.some(f => f.businessIds.includes(businessId))
 }
 
 // ============================================================================
@@ -1310,189 +983,23 @@ export const redeemDeal = (dealId: string): boolean => {
 
 /**
  * Retrieves the current user session
- * @returns The session object
+ * @returns The user session object or null
  */
 export const getSession = (): UserSession | null => {
-  if (typeof window === 'undefined') {
-    return null
-  }
+  if (typeof window === 'undefined') return null
   const data = localStorage.getItem(STORAGE_KEYS.SESSION)
   return data ? JSON.parse(data) : null
 }
 
 /**
- * Updates the session data
+ * Updates the user session with new data
  * @param updates - Partial session data to update
  */
 export const updateSession = (updates: Partial<UserSession>): void => {
+  if (typeof window === 'undefined') return
   const session = getSession()
-  const updated = { ...session, ...updates }
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(updated))
-}
-
-// ============================================================================
-// Report Generation
-// ============================================================================
-
-/**
- * Report data structure for analytics
- */
-export interface ReportData {
-  totalBusinesses: number
-  totalReviews: number
-  averageRating: number
-  categoryBreakdown: { category: string; count: number; avgRating: number }[]
-  ratingDistribution: { rating: number; count: number }[]
-  topRatedBusinesses: Business[]
-  mostReviewedBusinesses: Business[]
-  recentReviews: Review[]
-  dealStats: {
-    totalDeals: number
-    totalRedemptions: number
-    avgDiscountPercent: number
+  if (session) {
+    const newSession = { ...session, ...updates }
+    localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(newSession))
   }
-}
-
-/**
- * Generates a comprehensive report of all data
- * @param filters - Optional filters for the report
- * @returns ReportData object with analytics
- */
-export const generateReport = (filters?: {
-  startDate?: string
-  endDate?: string
-  category?: string
-  minRating?: number
-}): ReportData => {
-  let businesses = getBusinesses()
-  let reviews = getReviews()
-  const deals = getDeals()
-  
-  // Apply filters
-  if (filters?.category) {
-    businesses = businesses.filter(b => b.category === filters.category)
-    const businessIds = new Set(businesses.map(b => b.id))
-    reviews = reviews.filter(r => businessIds.has(r.businessId))
-  }
-  
-  if (filters?.minRating) {
-    businesses = businesses.filter(b => b.averageRating >= filters.minRating!)
-  }
-  
-  if (filters?.startDate) {
-    reviews = reviews.filter(r => new Date(r.createdAt) >= new Date(filters.startDate!))
-  }
-  
-  if (filters?.endDate) {
-    reviews = reviews.filter(r => new Date(r.createdAt) <= new Date(filters.endDate!))
-  }
-  
-  // Calculate category breakdown
-  const categoryMap = new Map<string, { count: number; totalRating: number }>()
-  businesses.forEach(b => {
-    const cat = CATEGORIES.find(c => c.id === b.category)?.name || b.category
-    const existing = categoryMap.get(cat) || { count: 0, totalRating: 0 }
-    categoryMap.set(cat, {
-      count: existing.count + 1,
-      totalRating: existing.totalRating + b.averageRating
-    })
-  })
-  
-  const categoryBreakdown = Array.from(categoryMap.entries()).map(([category, data]) => ({
-    category,
-    count: data.count,
-    avgRating: Math.round((data.totalRating / data.count) * 10) / 10
-  }))
-  
-  // Calculate rating distribution
-  const ratingCounts = [0, 0, 0, 0, 0]
-  reviews.forEach(r => {
-    const bucket = Math.min(Math.floor(r.rating) - 1, 4)
-    if (bucket >= 0) ratingCounts[bucket]++
-  })
-  
-  const ratingDistribution = ratingCounts.map((count, i) => ({
-    rating: i + 1,
-    count
-  }))
-  
-  // Get top rated businesses
-  const topRatedBusinesses = [...businesses]
-    .sort((a, b) => b.averageRating - a.averageRating)
-    .slice(0, 5)
-  
-  // Get most reviewed businesses
-  const mostReviewedBusinesses = [...businesses]
-    .sort((a, b) => b.totalReviews - a.totalReviews)
-    .slice(0, 5)
-  
-  // Get recent reviews
-  const recentReviews = [...reviews]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 10)
-  
-  // Calculate deal stats
-  const dealStats = {
-    totalDeals: deals.length,
-    totalRedemptions: deals.reduce((sum, d) => sum + d.redemptions, 0),
-    avgDiscountPercent: Math.round(
-      deals.reduce((sum, d) => sum + d.discountPercent, 0) / deals.length
-    )
-  }
-  
-  return {
-    totalBusinesses: businesses.length,
-    totalReviews: reviews.length,
-    averageRating: Math.round(
-      (businesses.reduce((sum, b) => sum + b.averageRating, 0) / businesses.length) * 10
-    ) / 10,
-    categoryBreakdown,
-    ratingDistribution,
-    topRatedBusinesses,
-    mostReviewedBusinesses,
-    recentReviews,
-    dealStats
-  }
-}
-
-/**
- * Exports report data in specified format
- * @param data - The report data to export
- * @param format - Export format (csv, json)
- * @returns Formatted string for download
- */
-export const exportReport = (data: ReportData, format: 'csv' | 'json'): string => {
-  if (format === 'json') {
-    return JSON.stringify(data, null, 2)
-  }
-  
-  // CSV format
-  const lines: string[] = [
-    'Business Boost Report',
-    `Generated: ${new Date().toLocaleDateString()}`,
-    '',
-    'Summary Statistics',
-    `Total Businesses,${data.totalBusinesses}`,
-    `Total Reviews,${data.totalReviews}`,
-    `Average Rating,${data.averageRating}`,
-    '',
-    'Category Breakdown',
-    'Category,Count,Average Rating'
-  ]
-  
-  data.categoryBreakdown.forEach(cat => {
-    lines.push(`${cat.category},${cat.count},${cat.avgRating}`)
-  })
-  
-  lines.push('', 'Rating Distribution', 'Stars,Count')
-  data.ratingDistribution.forEach(dist => {
-    lines.push(`${dist.rating},${dist.count}`)
-  })
-  
-  lines.push('', 'Top Rated Businesses', 'Name,Rating,Reviews')
-  data.topRatedBusinesses.forEach(b => {
-    lines.push(`"${b.name}",${b.averageRating},${b.totalReviews}`)
-  })
-  
-  return lines.join('\n')
 }
