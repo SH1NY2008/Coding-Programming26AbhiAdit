@@ -238,7 +238,7 @@ function BusinessDetailContent() {
            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="flex items-center gap-3 mb-4">
                 <Badge variant="secondary" className="bg-background/80 backdrop-blur text-foreground font-semibold px-3 py-1">
-                  {business.subcategory}
+                  {categoryName}
                 </Badge>
                 <Badge
                   className={cn(

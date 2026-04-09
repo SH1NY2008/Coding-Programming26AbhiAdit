@@ -195,7 +195,7 @@ export function BusinessCard({
         <CardContent className="p-4">
           {/* Category */}
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-            {business.subcategory}
+            {business.category}
           </p>
 
           {/* Business Name */}

@@ -8,31 +8,18 @@ import { validateSearchQuery } from "@/lib/validation"
 interface BusinessSearchOptions {
   searchQuery: string
   selectedCategory: string
-  selectedSubcategory: string
-  selectedPriceLevels: number[]
-  minRating: number
   sortBy: string
-  dataSource: "osm" | "mock"
 }
 
 export function useBusinessSearch({
   searchQuery,
   selectedCategory,
-  selectedSubcategory,
-  selectedPriceLevels,
-  minRating,
   sortBy,
-  dataSource,
 }: BusinessSearchOptions) {
   const { osmBusinesses, isLoadingBusinesses, getDistanceFromUser } = useLocation()
 
   const filteredBusinesses = useMemo(() => {
-    let sourceData: Business[] = dataSource === "osm" ? osmBusinesses : []
-
-    if (dataSource === "osm" && osmBusinesses.length === 0 && !isLoadingBusinesses) {
-      const mockResults = filterBusinesses({})
-      sourceData = mockResults
-    }
+    let sourceData: Business[] = osmBusinesses
 
     const validation = validateSearchQuery(searchQuery)
     const sanitizedSearch = validation.isValid ? validation.sanitized?.toLowerCase() : ""
@@ -45,10 +32,6 @@ export function useBusinessSearch({
         if (!searchableText.includes(sanitizedSearch)) return false
       }
       if (selectedCategory && business.category !== selectedCategory) return false
-      if (selectedSubcategory && business.subcategory !== selectedSubcategory) return false
-      if (selectedPriceLevels.length > 0 && !selectedPriceLevels.includes(business.priceLevel))
-        return false
-      if (minRating > 0 && business.averageRating < minRating) return false
       return true
     })
 
@@ -91,14 +74,10 @@ export function useBusinessSearch({
 
     return results
   }, [
-    dataSource,
     osmBusinesses,
     isLoadingBusinesses,
     searchQuery,
     selectedCategory,
-    selectedSubcategory,
-    selectedPriceLevels,
-    minRating,
     sortBy,
     getDistanceFromUser,
   ])

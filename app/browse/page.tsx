@@ -2,18 +2,15 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Business, CATEGORIES } from "@/lib/data"
 import { useLocation } from "@/lib/location-context"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import {
   Loader2,
   Map,
   RefreshCw,
   Search,
-  SlidersHorizontal,
 } from "lucide-react"
 
 import { BusinessList } from "./components/BusinessList"
@@ -28,22 +25,16 @@ function BrowseContent() {
     locationError,
     isLoadingLocation,
     businessError,
-    searchRadius,
-    setSearchRadius,
     refreshLocation,
     refreshBusinesses,
     useManualLocation,
   } = useLocation()
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "")
-  const [selectedSubcategory, setSelectedSubcategory] = useState(searchParams.get("subcategory") || "")
-  const [selectedPriceLevels, setSelectedPriceLevels] = useState<number[]>([])
-  const [minRating, setMinRating] = useState<number>(0)
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "distance-asc")
+              const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "")
+              const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "distance-asc")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  const [dataSource, setDataSource] = useState<"osm" | "mock">("osm")
+  
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(12)
 
@@ -55,11 +46,7 @@ function BrowseContent() {
   const filteredBusinesses = useBusinessSearch({
     searchQuery,
     selectedCategory,
-    selectedSubcategory,
-    selectedPriceLevels,
-    minRating,
     sortBy,
-    dataSource,
   })
 
   const handleManualLocationSubmit = async (e: React.FormEvent) => {
@@ -86,38 +73,11 @@ function BrowseContent() {
     const params = new URLSearchParams()
     if (searchQuery) params.set("search", searchQuery)
     if (selectedCategory) params.set("category", selectedCategory)
-    if (selectedSubcategory) params.set("subcategory", selectedSubcategory)
     if (sortBy !== "rating-desc") params.set("sortBy", sortBy)
 
     const newUrl = params.toString() ? `/browse?${params.toString()}` : "/browse"
     router.replace(newUrl, { scroll: false })
-  }, [searchQuery, selectedCategory, selectedSubcategory, sortBy, router])
-
-  const togglePriceLevel = (level: number) => {
-    setSelectedPriceLevels(prev =>
-      prev.includes(level) ? prev.filter(l => l !== level) : [...prev, level]
-    )
-  }
-
-  const clearFilters = () => {
-    setSearchQuery("")
-    setSelectedCategory("")
-    setSelectedSubcategory("")
-    setSelectedPriceLevels([])
-    setMinRating(0)
-    setSortBy("rating-desc")
-  }
-
-  const getActiveFilterCount = () => {
-    let count = 0
-    if (selectedCategory) count++
-    if (selectedSubcategory) count++
-    if (selectedPriceLevels.length > 0) count++
-    if (minRating > 0) count++
-    return count
-  }
-
-  const activeFilterCount = getActiveFilterCount()
+  }, [searchQuery, selectedCategory, sortBy, router])
 
   const { isLoadingBusinesses } = useLocation()
 
@@ -161,8 +121,32 @@ function BrowseContent() {
 
           <main className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-
-              
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={selectedCategory === "" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("")}
+                >
+                  All
+                </Button>
+                <Button
+                  variant={selectedCategory === "food" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("food")}
+                >
+                  Food
+                </Button>
+                <Button
+                  variant={selectedCategory === "retail" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("retail")}
+                >
+                  Retail
+                </Button>
+                <Button
+                  variant={selectedCategory === "services" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("services")}
+                >
+                  Services
+                </Button>
+              </div>
             </div>
 
             {isLoadingBusinesses || isLoadingLocation ? (
@@ -179,7 +163,7 @@ function BrowseContent() {
               </div>
             ) : (
               <>
-                <BusinessList businesses={[]} viewMode={viewMode} />
+                <BusinessList businesses={paginatedBusinesses} viewMode={viewMode} />
                 
               </>
             )}

@@ -59,7 +59,7 @@ export default function BookmarksPage() {
                 description: business.description,
                 link: `/business?id=${business.id}`,
                 image: business.imageUrl || "/placeholder.svg",
-                category: business.subcategory || business.category,
+                category: business.category,
                 rating: business.averageRating,
                 reviews: business.totalReviews,
                 location: `${business.city}, ${business.state}`,

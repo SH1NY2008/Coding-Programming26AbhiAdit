@@ -58,77 +58,77 @@ const OVERPASS_API = "https://overpass-api.de/api/interpreter"
 /**
  * Mapping of OSM tags to our category system
  */
-const CATEGORY_MAP: Record<string, { category: string; subcategory: string }> = {
+const CATEGORY_MAP: Record<string, { category: string }> = {
   // Food & Dining
-  restaurant: { category: "food", subcategory: "Restaurants" },
-  cafe: { category: "food", subcategory: "Cafes" },
-  bakery: { category: "food", subcategory: "Bakeries" },
-  fast_food: { category: "food", subcategory: "Fast Food" },
-  bar: { category: "food", subcategory: "Restaurants" },
-  pub: { category: "food", subcategory: "Restaurants" },
-  ice_cream: { category: "food", subcategory: "Cafes" },
-  food_court: { category: "food", subcategory: "Fast Food" },
+  restaurant: { category: "food" },
+  cafe: { category: "food" },
+  bakery: { category: "food" },
+  fast_food: { category: "food" },
+  bar: { category: "food" },
+  pub: { category: "food" },
+  ice_cream: { category: "food" },
+  food_court: { category: "food" },
   
   // Retail
-  clothes: { category: "retail", subcategory: "Clothing" },
-  shoes: { category: "retail", subcategory: "Clothing" },
-  electronics: { category: "retail", subcategory: "Electronics" },
-  books: { category: "retail", subcategory: "Books" },
-  gift: { category: "retail", subcategory: "Gifts" },
-  furniture: { category: "retail", subcategory: "Home Goods" },
-  sports: { category: "retail", subcategory: "Sports" },
-  toys: { category: "retail", subcategory: "Gifts" },
-  jewelry: { category: "retail", subcategory: "Gifts" },
-  florist: { category: "retail", subcategory: "Gifts" },
-  convenience: { category: "retail", subcategory: "Home Goods" },
-  supermarket: { category: "retail", subcategory: "Home Goods" },
-  hardware: { category: "retail", subcategory: "Home Goods" },
-  department_store: { category: "retail", subcategory: "Home Goods" },
-  mobile_phone: { category: "retail", subcategory: "Electronics" },
-  computer: { category: "retail", subcategory: "Electronics" },
+  clothes: { category: "retail" },
+  shoes: { category: "retail" },
+  electronics: { category: "retail" },
+  books: { category: "retail" },
+  gift: { category: "retail" },
+  furniture: { category: "retail" },
+  sports: { category: "retail" },
+  toys: { category: "retail" },
+  jewelry: { category: "retail" },
+  florist: { category: "retail" },
+  convenience: { category: "retail" },
+  supermarket: { category: "retail" },
+  hardware: { category: "retail" },
+  department_store: { category: "retail" },
+  mobile_phone: { category: "retail" },
+  computer: { category: "retail" },
   
   // Services
-  doctors: { category: "services", subcategory: "Healthcare" },
-  dentist: { category: "services", subcategory: "Healthcare" },
-  pharmacy: { category: "services", subcategory: "Healthcare" },
-  hospital: { category: "services", subcategory: "Healthcare" },
-  clinic: { category: "services", subcategory: "Healthcare" },
-  veterinary: { category: "services", subcategory: "Healthcare" },
-  car_repair: { category: "services", subcategory: "Automotive" },
-  car_wash: { category: "services", subcategory: "Automotive" },
-  fuel: { category: "services", subcategory: "Automotive" },
-  hairdresser: { category: "services", subcategory: "Beauty & Spa" },
-  beauty: { category: "services", subcategory: "Beauty & Spa" },
-  spa: { category: "services", subcategory: "Beauty & Spa" },
-  tattoo: { category: "services", subcategory: "Beauty & Spa" },
-  massage: { category: "services", subcategory: "Beauty & Spa" },
-  bank: { category: "services", subcategory: "Financial" },
-  lawyer: { category: "services", subcategory: "Legal" },
-  insurance: { category: "services", subcategory: "Financial" },
-  estate_agent: { category: "services", subcategory: "Financial" },
-  accountant: { category: "services", subcategory: "Financial" },
+  doctors: { category: "services" },
+  dentist: { category: "services" },
+  pharmacy: { category: "services" },
+  hospital: { category: "services" },
+  clinic: { category: "services" },
+  veterinary: { category: "services" },
+  car_repair: { category: "services" },
+  car_wash: { category: "services" },
+  fuel: { category: "services" },
+  hairdresser: { category: "services" },
+  beauty: { category: "services" },
+  spa: { category: "services" },
+  tattoo: { category: "services" },
+  massage: { category: "services" },
+  bank: { category: "services" },
+  lawyer: { category: "services" },
+  insurance: { category: "services" },
+  estate_agent: { category: "services" },
+  accountant: { category: "services" },
   
   // Entertainment
-  cinema: { category: "entertainment", subcategory: "Movies" },
-  theatre: { category: "entertainment", subcategory: "Live Music" },
-  nightclub: { category: "entertainment", subcategory: "Live Music" },
-  casino: { category: "entertainment", subcategory: "Gaming" },
-  arts_centre: { category: "entertainment", subcategory: "Arts & Crafts" },
-  gallery: { category: "entertainment", subcategory: "Arts & Crafts" },
-  museum: { category: "entertainment", subcategory: "Arts & Crafts" },
-  fitness_centre: { category: "entertainment", subcategory: "Fitness" },
-  gym: { category: "entertainment", subcategory: "Fitness" },
-  swimming_pool: { category: "entertainment", subcategory: "Recreation" },
-  bowling_alley: { category: "entertainment", subcategory: "Recreation" },
-  amusement_arcade: { category: "entertainment", subcategory: "Gaming" },
+  cinema: { category: "entertainment" },
+  theatre: { category: "entertainment" },
+  nightclub: { category: "entertainment" },
+  casino: { category: "entertainment" },
+  arts_centre: { category: "entertainment" },
+  gallery: { category: "entertainment" },
+  museum: { category: "entertainment" },
+  fitness_centre: { category: "entertainment" },
+  gym: { category: "entertainment" },
+  swimming_pool: { category: "entertainment" },
+  bowling_alley: { category: "entertainment" },
+  amusement_arcade: { category: "entertainment" },
   
   // Education
-  school: { category: "education", subcategory: "Tutoring" },
-  driving_school: { category: "education", subcategory: "Tutoring" },
-  language_school: { category: "education", subcategory: "Language" },
-  music_school: { category: "education", subcategory: "Music Lessons" },
-  dance: { category: "education", subcategory: "Art Classes" },
-  dojo: { category: "education", subcategory: "Tutoring" },
+  school: { category: "education" },
+  driving_school: { category: "education" },
+  language_school: { category: "education" },
+  music_school: { category: "education" },
+  dance: { category: "education" },
+  dojo: { category: "education" },
 }
 
 /**
@@ -191,52 +191,52 @@ function getCategoryImage(category: string): string {
 /**
  * Determines category from OSM tags
  */
-function getCategoryFromTags(tags: OSMElement["tags"]): { category: string; subcategory: string } {
-  if (!tags) return { category: "services", subcategory: "Home Services" }
+function getCategoryFromTags(tags: OSMElement["tags"]): string {
+  if (!tags) return "services"
   
   // Check amenity tag first
   if (tags.amenity && CATEGORY_MAP[tags.amenity]) {
-    return CATEGORY_MAP[tags.amenity]
+    return CATEGORY_MAP[tags.amenity].category
   }
   
   // Check shop tag
   if (tags.shop && CATEGORY_MAP[tags.shop]) {
-    return CATEGORY_MAP[tags.shop]
+    return CATEGORY_MAP[tags.shop].category
   }
   
   // Check leisure tag
   if (tags.leisure && CATEGORY_MAP[tags.leisure]) {
-    return CATEGORY_MAP[tags.leisure]
+    return CATEGORY_MAP[tags.leisure].category
   }
   
   // Check healthcare tag
   if (tags.healthcare && CATEGORY_MAP[tags.healthcare]) {
-    return CATEGORY_MAP[tags.healthcare]
+    return CATEGORY_MAP[tags.healthcare].category
   }
   
   // Check tourism tag
   if (tags.tourism && CATEGORY_MAP[tags.tourism]) {
-    return CATEGORY_MAP[tags.tourism]
+    return CATEGORY_MAP[tags.tourism].category
   }
   
   // Check craft tag
   if (tags.craft) {
-    return { category: "services", subcategory: "Home Services" }
+    return "services"
   }
   
   // Check office tag
   if (tags.office) {
-    return { category: "services", subcategory: "Financial" }
+    return "services"
   }
   
   // Default fallback
-  return { category: "services", subcategory: "Home Services" }
+  return "services"
 }
 
 /**
  * Generates business description from tags
  */
-function generateDescription(tags: OSMElement["tags"], categoryInfo: { category: string; subcategory: string }): string {
+function generateDescription(tags: OSMElement["tags"], category: string): string {
   const parts: string[] = []
   
   if (tags?.cuisine) {
@@ -280,7 +280,7 @@ function generateDescription(tags: OSMElement["tags"], categoryInfo: { category:
       ],
     }
     
-    const categoryDescs = descriptions[categoryInfo.category] || descriptions.services
+    const categoryDescs = descriptions[category] || descriptions.services
     parts.push(categoryDescs[Math.floor(Math.random() * categoryDescs.length)])
   }
   
@@ -305,8 +305,8 @@ function generateDefaultHours(): Business["hours"] {
 /**
  * Generates tags from OSM data
  */
-function generateTags(tags: OSMElement["tags"], categoryInfo: { category: string; subcategory: string }): string[] {
-  const result: string[] = [categoryInfo.subcategory]
+function generateTags(tags: OSMElement["tags"], category: string): string[] {
+  const result: string[] = []
   
   if (tags?.cuisine) {
     result.push(...tags.cuisine.split(";").slice(0, 2).map(c => c.trim()))
@@ -325,7 +325,7 @@ function generateTags(tags: OSMElement["tags"], categoryInfo: { category: string
     education: ["Learning", "Skill Building"],
   }
   
-  const extras = categoryTags[categoryInfo.category] || []
+  const extras = categoryTags[category] || []
   result.push(extras[Math.floor(Math.random() * extras.length)])
   
   return [...new Set(result)].slice(0, 4)
@@ -352,11 +352,9 @@ export async function fetchNearbyBusinesses(
   const query = `
     [out:json][timeout:25];
     (
-      node["name"]["amenity"~"restaurant|cafe|bakery|fast_food|bar|pub|pharmacy|bank|doctors|dentist|cinema|theatre|gym|library"](around:${radiusMeters},${latitude},${longitude});
+      node["name"]["amenity"~"restaurant|cafe|pharmacy|bank"](around:${radiusMeters},${latitude},${longitude});
       node["name"]["shop"](around:${radiusMeters},${latitude},${longitude});
-      node["name"]["leisure"~"fitness_centre|sports_centre|swimming_pool"](around:${radiusMeters},${latitude},${longitude});
-      node["name"]["tourism"~"museum|gallery|attraction"](around:${radiusMeters},${latitude},${longitude});
-      way["name"]["amenity"~"restaurant|cafe|bakery|fast_food|bar|pub|pharmacy|bank|doctors|dentist|cinema|theatre|gym|library"](around:${radiusMeters},${latitude},${longitude});
+      way["name"]["amenity"~"restaurant|cafe|pharmacy|bank"](around:${radiusMeters},${latitude},${longitude});
       way["name"]["shop"](around:${radiusMeters},${latitude},${longitude});
     );
     out center;
@@ -382,7 +380,7 @@ export async function fetchNearbyBusinesses(
       .filter((el) => el.tags?.name) // Only include named businesses
       .map((el, index) => {
         const tags = el.tags || {}
-        const categoryInfo = getCategoryFromTags(tags)
+        const category = getCategoryFromTags(tags)
         const lat = el.lat ?? el.center?.lat ?? latitude
         const lon = el.lon ?? el.center?.lon ?? longitude
         
@@ -397,9 +395,8 @@ export async function fetchNearbyBusinesses(
         return {
           id: `osm-${el.id}`,
           name: tags.name || "Local Business",
-          description: generateDescription(tags, categoryInfo),
-          category: categoryInfo.category,
-          subcategory: categoryInfo.subcategory,
+          description: generateDescription(tags, category),
+          category: category,
           address,
           city: tags["addr:city"] || "Nearby",
           state: tags["addr:state"] || "",
@@ -407,7 +404,7 @@ export async function fetchNearbyBusinesses(
           phone: tags.phone || "",
           email: tags.email || "",
           website: tags.website || "",
-          imageUrl: getCategoryImage(categoryInfo.category),
+          imageUrl: getCategoryImage(category),
           hours: generateDefaultHours(),
           priceLevel: (Math.floor(Math.random() * 3) + 1) as 1 | 2 | 3 | 4,
           averageRating: generateRating(),
@@ -415,7 +412,7 @@ export async function fetchNearbyBusinesses(
           isOpen: true,
           latitude: lat,
           longitude: lon,
-          tags: generateTags(tags, categoryInfo),
+          tags: generateTags(tags, category),
           createdAt: new Date().toISOString(),
         }
       })

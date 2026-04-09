@@ -30,7 +30,6 @@ export interface Business {
   name: string
   description: string
   category: string
-  subcategory: string
   address: string
   city: string
   state: string
@@ -118,7 +117,7 @@ export interface UserSession {
 // ============================================================================
 
 /**
- * Available business categories with icons and subcategories
+ * Available business categories with icons
  * Used for filtering and organizing business listings
  */
 export const CATEGORIES: Category[] = [
@@ -126,31 +125,26 @@ export const CATEGORIES: Category[] = [
     id: 'food',
     name: 'Food & Dining',
     icon: 'utensils',
-    subcategories: ['Restaurants', 'Cafes', 'Bakeries', 'Fast Food', 'Fine Dining', 'Food Trucks']
   },
   {
     id: 'retail',
     name: 'Retail',
     icon: 'shopping-bag',
-    subcategories: ['Clothing', 'Electronics', 'Books', 'Gifts', 'Home Goods', 'Sports']
   },
   {
     id: 'services',
     name: 'Services',
     icon: 'briefcase',
-    subcategories: ['Healthcare', 'Automotive', 'Home Services', 'Beauty & Spa', 'Legal', 'Financial']
   },
   {
     id: 'entertainment',
     name: 'Entertainment',
     icon: 'music',
-    subcategories: ['Movies', 'Live Music', 'Gaming', 'Arts & Crafts', 'Fitness', 'Recreation']
   },
   {
     id: 'education',
     name: 'Education',
     icon: 'graduation-cap',
-    subcategories: ['Tutoring', 'Music Lessons', 'Language', 'Art Classes', 'STEM', 'Test Prep']
   }
 ]
 
@@ -180,7 +174,6 @@ const generateMockBusinesses = (): Business[] => {
       name: 'The Rustic Spoon',
       description: 'Farm-to-table dining featuring locally sourced ingredients and seasonal menus. Our chefs create innovative dishes that celebrate the flavors of our community.',
       category: 'food',
-      subcategory: 'Restaurants',
       address: '123 Main Street',
       city: 'Springfield',
       state: 'IL',
@@ -211,7 +204,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Bean & Brew Coffee House',
       description: 'Artisan coffee roasted in-house with cozy atmosphere perfect for studying or catching up with friends. We also serve fresh pastries daily.',
       category: 'food',
-      subcategory: 'Cafes',
+
       address: '456 Oak Avenue',
       city: 'Springfield',
       state: 'IL',
@@ -242,7 +235,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Sweet Delights Bakery',
       description: 'Family-owned bakery specializing in custom cakes, fresh bread, and European pastries made from scratch every morning.',
       category: 'food',
-      subcategory: 'Bakeries',
+
       address: '789 Maple Drive',
       city: 'Springfield',
       state: 'IL',
@@ -273,7 +266,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Tech Haven Electronics',
       description: 'Your local destination for the latest gadgets, computer repairs, and tech support. We offer personalized service that big box stores cannot match.',
       category: 'retail',
-      subcategory: 'Electronics',
+
       address: '321 Technology Lane',
       city: 'Springfield',
       state: 'IL',
@@ -304,7 +297,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Page Turner Books',
       description: 'Independent bookstore with curated selections, rare finds, and regular author events. Supporting local readers since 1985.',
       category: 'retail',
-      subcategory: 'Books',
+
       address: '567 Library Street',
       city: 'Springfield',
       state: 'IL',
@@ -335,7 +328,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Bloom Boutique',
       description: 'Trendy clothing and accessories featuring local designers and sustainable fashion. Find your unique style with our personalized styling services.',
       category: 'retail',
-      subcategory: 'Clothing',
+
       address: '890 Fashion Ave',
       city: 'Springfield',
       state: 'IL',
@@ -366,7 +359,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Wellness Center & Spa',
       description: 'Full-service spa offering massage therapy, facials, and holistic wellness treatments. Escape the everyday and find your inner peace.',
       category: 'services',
-      subcategory: 'Beauty & Spa',
+
       address: '432 Serenity Lane',
       city: 'Springfield',
       state: 'IL',
@@ -397,7 +390,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Quick Fix Auto Care',
       description: 'Honest, reliable auto repair with transparent pricing. From oil changes to engine rebuilds, we treat every car like our own.',
       category: 'services',
-      subcategory: 'Automotive',
+
       address: '765 Motor Way',
       city: 'Springfield',
       state: 'IL',
@@ -428,7 +421,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Harmony Music Studio',
       description: 'Music lessons for all ages and skill levels. Learn piano, guitar, violin, drums, and voice from experienced instructors in a supportive environment.',
       category: 'education',
-      subcategory: 'Music Lessons',
+
       address: '234 Melody Court',
       city: 'Springfield',
       state: 'IL',
@@ -459,7 +452,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'FitLife Gym & Training',
       description: 'State-of-the-art fitness facility with personal training, group classes, and nutrition coaching. Your journey to better health starts here.',
       category: 'entertainment',
-      subcategory: 'Fitness',
+
       address: '678 Health Blvd',
       city: 'Springfield',
       state: 'IL',
@@ -490,7 +483,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Green Thumb Garden Center',
       description: 'Everything for your garden: plants, tools, soil, and expert advice. We help both beginners and experienced gardeners create beautiful outdoor spaces.',
       category: 'retail',
-      subcategory: 'Home Goods',
+
       address: '999 Garden Path',
       city: 'Springfield',
       state: 'IL',
@@ -521,7 +514,7 @@ const generateMockBusinesses = (): Business[] => {
       name: 'Bright Minds Tutoring',
       description: 'Personalized tutoring for K-12 students in all subjects. Our certified teachers help students build confidence and achieve academic success.',
       category: 'education',
-      subcategory: 'Tutoring',
+
       address: '456 Scholar Way',
       city: 'Springfield',
       state: 'IL',
@@ -939,7 +932,6 @@ export const saveBusiness = (business: Business): void => {
 export const filterBusinesses = (filters: {
   search?: string
   category?: string
-  subcategory?: string
   priceLevel?: number[]
   minRating?: number
   sortBy?: 'rating' | 'reviews' | 'name' | 'price'
@@ -960,11 +952,6 @@ export const filterBusinesses = (filters: {
   // Category filter
   if (filters.category) {
     businesses = businesses.filter(b => b.category === filters.category)
-  }
-  
-  // Subcategory filter
-  if (filters.subcategory) {
-    businesses = businesses.filter(b => b.subcategory === filters.subcategory)
   }
   
   // Price level filter
