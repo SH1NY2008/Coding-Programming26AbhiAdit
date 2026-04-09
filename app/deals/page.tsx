@@ -205,7 +205,7 @@ export default function DealsPage() {
                   )}
                 </div>
               ) : (
-                <DealsGrid deals={filteredDeals} businesses={businesses} />
+                <DealsGrid deals={[]} businesses={businesses} />
               )}
             </TabsContent>
           </Tabs>

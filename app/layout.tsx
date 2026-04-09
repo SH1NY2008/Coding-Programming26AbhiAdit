@@ -7,7 +7,7 @@ import { AuthProvider } from '@/lib/auth-context'
 import { LocationProvider } from '@/lib/location-context'
 import { Header } from '@/components/header'
 import { SiteFooter } from '@/components/site-footer'
-import { HelpChat } from '@/components/help-chat'
+
 import { Toaster } from "@/components/ui/sonner"
 import { ServiceWorkerRegister } from "@/components/service-worker-register"
 import { SmoothScroll } from "@/components/smooth-scroll"
@@ -64,9 +64,9 @@ export default function RootLayout({
             <AppProvider>
               <LocationProvider>
                 <Header />
-                <main id="main-content" className="min-h-screen pt-20">{children}</main>
+                <main id="main-content" className="min-h-screen pt-16 lg:pt-24">{children}</main>
                 <SiteFooter />
-                <HelpChat />
+                
               </LocationProvider>
             </AppProvider>
           </AuthProvider>

@@ -23,10 +23,7 @@ import {
   reverseGeocode as reverseGeocodeOSM,
   calculateDistance,
 } from "./openstreetmap"
-import { 
-  fetchNearbyBusinesses as fetchGeoapifyBusinesses,
-  reverseGeocode as reverseGeocodeGeoapify 
-} from "./geoapify"
+
 import type { Business } from "./data"
 
 // ============================================================================
@@ -90,27 +87,14 @@ export function LocationProvider({ children }: LocationProviderProps) {
   
   // Effective coordinates (manual or from geolocation)
   // Hardcoded to Lafayette High School, Ballwin, MO for demo purposes
-  const effectiveLat = manualLocation?.lat ?? 38.59550; // geo.latitude
-  const effectiveLon = manualLocation?.lon ?? -90.63751; // geo.longitude
+  const effectiveLat = manualLocation?.lat ?? geo.latitude;
+  const effectiveLon = manualLocation?.lon ?? geo.longitude;
 
   /**
    * Fetches location name via reverse geocoding
    */
   const fetchLocationInfo = useCallback(async (lat: number, lon: number) => {
     try {
-      // Try Geoapify first
-      const geoapifyResult = await reverseGeocodeGeoapify(lat, lon)
-      if (geoapifyResult) {
-        const props = geoapifyResult.properties
-        setLocationInfo({
-          city: props.city || props.town || props.village || "Your Area",
-          state: props.state || "",
-          displayName: props.formatted || "Your Location",
-        })
-        return
-      }
-
-      // Fallback to OSM
       const info = await reverseGeocodeOSM(lat, lon)
       setLocationInfo(info)
     } catch {
@@ -130,16 +114,8 @@ export function LocationProvider({ children }: LocationProviderProps) {
     setBusinessError(null)
     
     try {
-      // Try Geoapify first
-      try {
-        const businesses = await fetchGeoapifyBusinesses(lat, lon, radius)
-        setOsmBusinesses(businesses)
-      } catch (geoapifyError) {
-        console.warn("Geoapify failed, falling back to OSM:", geoapifyError)
-        // Fallback to OSM
-        const businesses = await fetchOSMBusinesses(lat, lon, radius)
-        setOsmBusinesses(businesses)
-      }
+      const businesses = await fetchOSMBusinesses(lat, lon, radius)
+      setOsmBusinesses(businesses)
     } catch (error) {
       console.error("Failed to fetch businesses:", error)
       setBusinessError("Unable to load nearby businesses. Please try again.")
@@ -156,7 +132,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
     if (effectiveLat !== null && effectiveLon !== null) {
       fetchBusinesses(effectiveLat, effectiveLon, searchRadius)
     }
-  }, [effectiveLat, effectiveLon, searchRadius, fetchBusinesses])
+  }, [effectiveLat, effectiveLon, searchRadius])
 
   /**
    * Uses manual coordinates instead of geolocation

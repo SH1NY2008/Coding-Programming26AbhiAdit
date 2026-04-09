@@ -548,8 +548,7 @@ const generateMockBusinesses = (): Business[] => {
       createdAt: '2024-03-05T10:00:00Z'
     }
   ]
-  
-  return businesses
+  return businesses.filter(business => business.city !== 'Springfield')
 }
 
 /**

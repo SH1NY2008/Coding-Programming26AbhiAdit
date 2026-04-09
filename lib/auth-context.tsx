@@ -1,16 +1,14 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { 
   User, 
+  onAuthStateChanged, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut as firebaseSignOut 
 } from "firebase/auth";
-// import { 
-//   onAuthStateChanged, 
-//   GoogleAuthProvider, 
-//   signInWithPopup, 
-//   signOut as firebaseSignOut 
-// } from "firebase/auth";
-// import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 
 interface AuthContextType {
   user: User | null;
@@ -50,32 +48,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   } as unknown as User);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     setUser(user);
-  //     setLoading(false);
-  //   });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
 
-  //   return () => unsubscribe();
-  // }, []);
+    return () => unsubscribe();
+  }, []);
 
   const signInWithGoogle = async () => {
-    // const provider = new GoogleAuthProvider();
-    // try {
-    //   await signInWithPopup(auth, provider);
-    // } catch (error) {
-    //   console.error("Error signing in with Google", error);
-    // }
-    console.log("Mock sign in - already logged in as pardhu418@gmail.com");
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Error signing in with Google", error);
+    }
   };
 
   const logout = async () => {
-    // try {
-    //   await firebaseSignOut(auth);
-    // } catch (error) {
-    //   console.error("Error signing out", error);
-    // }
-    console.log("Mock logout - staying logged in as pardhu418@gmail.com");
+    try {
+      await firebaseSignOut(auth);
+    } catch (error) {
+      console.error("Error signing out", error);
+    }
   };
 
   return (

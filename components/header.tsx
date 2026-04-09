@@ -1,13 +1,4 @@
-"use client"
-
-/**
- * Header Navigation Component
- * 
- * Sticky header with main navigation, accessibility toggles,
- * and mobile-responsive hamburger menu.
- * 
- * @module Header
- */
+'use client'
 
 import { useState } from "react"
 import Link from "next/link"
@@ -19,10 +10,9 @@ import {
   Search,
   Bookmark,
   Tag,
-  BarChart3,
   LogIn,
   LogOut,
-  UserCircle,
+  PlusCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,193 +34,123 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth-context"
 
-/**
- * Navigation link configuration
- */
 const navLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/browse", label: "Browse Businesses", icon: Search },
-  { href: "/bookmarks", label: "My Favorites", icon: Bookmark },
-  { href: "/deals", label: "Deals", icon: Tag },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/browse", label: "Browse" },
+  { href: "/deals", label: "Deals" },
+  { href: "/bookmarks", label: "Bookmarks" },
 ]
 
-/**
- * Header Component with Navigation
- * Provides sticky navigation with mobile support and accessibility features
- */
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const { user, signInWithGoogle, logout } = useAuth()
 
-  /**
-   * Checks if a navigation link is currently active
-   */
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === "/"
-    }
+    if (href === "/") return pathname === "/"
     return pathname.startsWith(href)
   }
 
-  return (
-    <header
-      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      role="banner"
-    >
-      <nav
-        className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-12"
-        aria-label="Main navigation"
-      >
-        {/* Logo */}
+  const NavLinks = ({ isMobile = false }) => (
+    <nav className={cn(isMobile ? "flex flex-col gap-4" : "hidden lg:flex items-center gap-8 text-base")}>
+      {navLinks.map(link => (
         <Link
-          href="/"
-          className="flex items-center gap-2 font-bold text-2xl tracking-tighter text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md"
-          aria-label="Byte-Sized Business Boost - Home"
+          key={link.href}
+          href={link.href}
+          onClick={() => isMobile && setMobileMenuOpen(false)}
+          className={cn(
+            "transition-colors",
+            isActive(link.href)
+              ? "text-white font-medium"
+              : "text-neutral-400 hover:text-white",
+            isMobile && "text-lg"
+          )}
+          aria-current={isActive(link.href) ? "page" : undefined}
         >
+          {link.label}
+        </Link>
+      ))}
+    </nav>
+  )
+
+  const AuthButtons = ({ isMobile = false }) => (
+    <div className={cn("flex items-center gap-4", isMobile && "flex-col w-full")}>
+      {user ? (
+        <>
+          {isMobile && <div className="border-t border-neutral-700 w-full pt-4" />}  
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                <Avatar className="h-9 w-9 border-2 border-neutral-700">
+                  <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
+                  <AvatarFallback>{user.displayName?.slice(0, 2).toUpperCase() || "U"}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-neutral-900 border-neutral-700 text-white" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user.displayName || "User"}</p>
+                  <p className="text-xs leading-none text-neutral-400">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-neutral-700" />
+              <DropdownMenuItem onClick={logout} className="hover:bg-neutral-800 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
+      ) : (
+        <Button onClick={signInWithGoogle} variant="ghost" className="text-sm text-neutral-300 hover:text-white">
+          Log in
+        </Button>
+      )}
+    </div>
+  )
+
+  return (
+    <>
+      {/* Desktop Header */}
+      <header className="hidden lg:flex fixed top-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="flex items-center justify-between gap-10 h-16 px-6 py-3 rounded-full bg-neutral-900/80 backdrop-blur-sm border border-neutral-700/80 shadow-lg">
+          <Link href="/" className="flex items-center gap-2 font-semibold text-white">
+             <span>BOOST</span>
+          </Link>
+          <NavLinks />
+          <AuthButtons />
+        </div>
+      </header>
+
+      {/* Mobile Header */}
+      <header className="lg:hidden sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter text-foreground">
           <span>BYTE-SIZED<span className="text-primary">BOOST</span></span>
         </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const active = isActive(link.href)
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "text-sm font-semibold uppercase tracking-wide transition-colors relative group py-2",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                aria-current={active ? "page" : undefined}
-              >
-                {link.label}
-                <span className={cn(
-                  "absolute bottom-0 left-0 w-full h-0.5 bg-primary scale-x-0 transition-transform duration-300 group-hover:scale-x-100",
-                  active && "scale-x-100"
-                )} />
-              </Link>
-            )
-          })}
-        </div>
-
-        {/* Desktop Auth */}
-        <div className="hidden lg:flex items-center gap-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                    <AvatarFallback>{user.displayName?.slice(0, 2).toUpperCase() || "CN"}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName || "User"}</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button onClick={signInWithGoogle} variant="default" size="sm" className="gap-2">
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </Button>
-          )}
-        </div>
-
-        {/* Right Section: Accessibility & Mobile Menu */}
-        <div className="flex items-center gap-2 lg:hidden">
-          {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="lg:hidden"
-                aria-label="Open navigation menu"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
+              <Button variant="ghost" size="icon" aria-label="Open navigation menu">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
+            <SheetContent side="right" className="w-full bg-neutral-900 border-l-0 text-white">
+              <SheetHeader className="border-b border-neutral-700 pb-4">
+                <SheetTitle className="text-white text-center">Menu</SheetTitle>
+                 <Button variant="ghost" size="icon" className="absolute top-3 right-3" onClick={() => setMobileMenuOpen(false)}>
+                    <X className="h-5 w-5" />
+                 </Button>
               </SheetHeader>
-              <nav className="flex flex-col gap-2 mt-6" aria-label="Mobile navigation">
-                {navLinks.map((link) => {
-                  const Icon = link.icon
-                  const active = isActive(link.href)
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-3 rounded-md text-base font-medium transition-colors",
-                        "hover:bg-accent hover:text-accent-foreground",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        active
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground"
-                      )}
-                      aria-current={active ? "page" : undefined}
-                    >
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                      {link.label}
-                    </Link>
-                  )
-                })}
-              </nav>
-              <div className="mt-6 pt-6 border-t border-border">
-                {user ? (
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.photoURL || ""} alt={user.displayName || "User"} />
-                        <AvatarFallback>{user.displayName?.slice(0, 2).toUpperCase() || "CN"}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium">{user.displayName || "User"}</span>
-                        <span className="text-xs text-muted-foreground">{user.email}</span>
-                      </div>
-                    </div>
-                    <Button onClick={logout} variant="outline" className="w-full justify-start gap-2">
-                      <LogOut className="h-4 w-4" />
-                      Log out
-                    </Button>
-                  </div>
-                ) : (
-                  <Button onClick={signInWithGoogle} className="w-full justify-start gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign In
-                  </Button>
-                )}
+              <div className="flex flex-col items-center justify-center h-full gap-8 -mt-16">
+                  <NavLinks isMobile={true} />
+                  <AuthButtons isMobile={true} />
               </div>
             </SheetContent>
           </Sheet>
         </div>
-      </nav>
-    </header>
+      </header>
+    </>
   )
 }

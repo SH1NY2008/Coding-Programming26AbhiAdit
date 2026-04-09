@@ -55,7 +55,6 @@ import {
   type Deal,
 } from "@/lib/data"
 import { cn } from "@/lib/utils"
-import { fetchPlaceDetails } from "@/lib/geoapify"
 
 /**
  * Formats business hours for display
@@ -91,11 +90,10 @@ function BusinessDetailContent() {
   
   const [business, setBusiness] = useState<Business | null>(() => {
     if (!id) return null
-    if (id.startsWith("geoapify-")) return null
     const result = getBusinessById(id)
     return result || null
   })
-  const [loading, setLoading] = useState(!!(id && id.startsWith("geoapify-")))
+  const [loading, setLoading] = useState(!id)
   const [reviews, setReviews] = useState<Review[]>([])
   const [deals, setDeals] = useState<Deal[]>([])
   const [helpfulReviews, setHelpfulReviews] = useState<Set<string>>(new Set())
@@ -106,43 +104,14 @@ function BusinessDetailContent() {
 
   // Calculate display rating/reviews to prefer local data over mock Geoapify data
   const displayedRating = useMemo(() => {
-    if (id && id.startsWith("geoapify-") && reviews.length > 0) {
-      const total = reviews.reduce((sum, r) => sum + r.rating, 0)
-      return Math.round((total / reviews.length) * 10) / 10
-    }
     return business?.averageRating || 0
   }, [business, reviews, id])
 
   const displayedReviewCount = useMemo(() => {
-    if (id && id.startsWith("geoapify-") && reviews.length > 0) {
-      return reviews.length
-    }
     return business?.totalReviews || 0
   }, [business, reviews, id])
 
-  useEffect(() => {
-    async function loadBusiness() {
-      if (id && id.startsWith("geoapify-")) {
-        try {
-          const placeId = id.replace("geoapify-", "")
-          const data = await fetchPlaceDetails(placeId)
-          if (data) {
-            setBusiness(data)
-          }
-        } catch (error) {
-          console.error("Failed to load business details:", error)
-        } finally {
-          setLoading(false)
-        }
-      }
-    }
 
-    if (id && id.startsWith("geoapify-")) {
-      loadBusiness()
-    } else if (!id) {
-      // No ID provided
-    }
-  }, [id])
 
   // Load data
   useEffect(() => {
@@ -222,7 +191,7 @@ function BusinessDetailContent() {
   const handleReviewSubmitted = () => {
     setReviews(getReviewsByBusiness(id))
     // Refresh business data for updated rating
-    if (!id.startsWith("geoapify-")) {
+    if (id) {
       const updatedBusiness = getBusinessById(id)
       if (updatedBusiness) {
         setBusiness(updatedBusiness)

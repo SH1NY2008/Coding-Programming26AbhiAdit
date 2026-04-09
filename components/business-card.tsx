@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 
 /**
  * Business Card Component
@@ -63,6 +63,21 @@ export function BusinessCard({
   const isOpen = isBusinessOpen(business)
   const deals = getDealsByBusiness(business.id)
   const hasDeals = deals.length > 0
+  const [extendedDetails, setExtendedDetails] = useState<any>(null)
+
+  useEffect(() => {
+    if (business.id.startsWith("geoapify")) {
+      const placeId = business.id.replace("geoapify-", "")
+      fetch(`/api/place-details?placeId=${placeId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) {
+            setExtendedDetails(data)
+          }
+        })
+        .catch(console.error)
+    }
+  }, [business.id])
 
   /**
    * Handles bookmark toggle action
@@ -190,10 +205,10 @@ export function BusinessCard({
 
           {/* Rating and Reviews */}
           <div className="flex items-center gap-2 mb-2">
-            <StarRating rating={business.averageRating} size="sm" />
-            <span className="text-sm font-medium">{business.averageRating}</span>
+            <StarRating rating={extendedDetails?.rating ?? business.averageRating} size="sm" />
+            <span className="text-sm font-medium">{extendedDetails?.rating?.toFixed(1) ?? business.averageRating}</span>
             <span className="text-sm text-muted-foreground">
-              ({business.totalReviews} reviews)
+              ({extendedDetails ? `${extendedDetails.reviews} reviews` : `${business.totalReviews} reviews`})
             </span>
           </div>
 

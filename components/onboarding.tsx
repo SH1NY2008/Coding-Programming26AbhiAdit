@@ -62,13 +62,7 @@ const steps = [
       "Discover special offers and discounts from local businesses. Get promo codes and save money while supporting your community.",
     color: "bg-orange-500",
   },
-  {
-    icon: BarChart3,
-    title: "Generate Reports",
-    description:
-      "Create custom reports analyzing business trends, ratings, and more. Export data in CSV or JSON format for your needs.",
-    color: "bg-purple-500",
-  },
+
 ]
 
 interface OnboardingProps {
