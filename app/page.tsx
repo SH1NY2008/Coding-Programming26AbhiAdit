@@ -163,39 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 bg-foreground text-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4 tracking-tight">
-              Everything You Need to Support Local
-            </h2>
-            <p className="text-background/70 text-lg max-w-2xl mx-auto">
-              Our platform makes it easy to discover, engage with, and support the small
-              businesses that make your community special.
-            </p>
-          </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { icon: Search, title: "Search & Discover", desc: "Find businesses by name, category, location, or filter by rating and price." },
-              { icon: Star, title: "Reviews & Ratings", desc: "Read authentic reviews and share your own experiences to help others." },
-              { icon: Bookmark, title: "Save Favorites", desc: "Bookmark businesses you love and organize them into custom folders." },
-              { icon: Tag, title: "Exclusive Deals", desc: "Find special offers and discounts from businesses in your area." }
-            ].map((feature, index) => (
-              <div key={index} className="bg-background/5 border border-background/10 rounded-2xl p-8 hover:bg-background/10 transition-colors animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: `${index * 100}ms` }}>
-                <div className="w-14 h-14 rounded-xl bg-background/10 flex items-center justify-center mb-6">
-                  <feature.icon className="h-7 w-7 text-background" />
-                </div>
-                <h3 className="font-bold text-xl mb-3">{feature.title}</h3>
-                <p className="text-background/70 leading-relaxed">
-                  {feature.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   )
 }
